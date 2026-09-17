@@ -1,0 +1,54 @@
+/* Design tokens shared by every screen. */
+:root {
+  --color-surface: #ffffff;
+  --color-surface-muted: #f5f8f6;
+  --color-surface-raised: #ffffff;
+  --color-border: #e1e8e4;
+  --color-text: #10201a;
+  --color-text-muted: #5d6d66;
+  --color-primary: #13684c;
+  --color-primary-hover: #0d5039;
+  --color-primary-soft: #e6f2ed;
+  --color-accent: #b7822f;
+  --color-danger: #a52218;
+  --color-danger-soft: #fceceb;
+  --color-success: #1d7a4f;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 18px;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+
+  --shadow-sm: 0 1px 2px rgba(16, 32, 26, 0.06);
+  --shadow-md: 0 10px 30px rgba(16, 32, 26, 0.08);
+
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --transition: 150ms ease;
+  --header-height: 64px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-surface: #0d1512;
+    --color-surface-muted: #111c18;
+    --color-surface-raised: #152220;
+    --color-border: #24352f;
+    --color-text: #e8f0ec;
+    --color-text-muted: #9aada5;
+    --color-primary: #3fae83;
+    --color-primary-hover: #56c197;
+    --color-primary-soft: #16302639;
+    --color-danger: #f28b82;
+    --color-danger-soft: #3a1d1b;
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.45);
+  }
+}

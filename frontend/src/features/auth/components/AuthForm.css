@@ -1,0 +1,6 @@
+/* Shared spacing for the credential forms. */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}

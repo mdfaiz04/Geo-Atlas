@@ -1,0 +1,50 @@
+/* Layout for the portfolio overview screen. */
+.dashboard__heading {
+  margin-bottom: var(--space-6);
+}
+
+.dashboard__title {
+  font-size: 1.5rem;
+}
+
+.dashboard__subtitle {
+  margin-top: var(--space-2);
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+}
+
+.dashboard__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--space-4);
+}
+
+.status {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+  font-size: 0.88rem;
+}
+
+.status__row {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.status__label {
+  color: var(--color-text-muted);
+}
+
+.status__value {
+  font-weight: 600;
+}
+
+.status__value--ok {
+  color: var(--color-success);
+}
+
+.status__value--down {
+  color: var(--color-danger);
+}

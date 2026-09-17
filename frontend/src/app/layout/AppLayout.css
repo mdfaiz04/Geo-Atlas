@@ -1,0 +1,61 @@
+/* Frame shared by every signed-in screen. */
+.layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.layout__header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  height: var(--header-height);
+  padding: 0 var(--space-5);
+  background-color: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.layout__brand {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--color-text);
+}
+
+.layout__account {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.layout__user {
+  text-align: right;
+  line-height: 1.25;
+}
+
+.layout__name {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.layout__email {
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+}
+
+.layout__main {
+  flex: 1;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-5);
+}
+
+@media (max-width: 640px) {
+  .layout__user {
+    display: none;
+  }
+}
