@@ -348,3 +348,10 @@ PostGIS geometry, portfolio map view.
 
 **Phase 3 — analytics and polish.** Site detail screen with Highcharts time series, seeded dataset
 with documented provenance, UI refinement, final documentation.
+
+### Enabling deployment
+
+The deploy workflow stays dormant until the repository variable `DEPLOY_ENABLED` is set to `true`
+(**Settings → Secrets and variables → Actions → Variables**). Until then CI still runs on every
+push, and the release pipeline is simply skipped rather than failing on missing credentials. Set
+the six secrets listed above first, then flip the variable.
