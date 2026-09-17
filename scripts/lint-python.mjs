@@ -29,6 +29,6 @@ const files = process.argv.slice(2).map((file) => file.replace(/^"|"$/g, ''));
 
 if (files.length > 0) {
   const ruff = resolveRuff();
-  run(ruff, ['check', '--fix'], files);
-  run(ruff, ['format'], files);
+  run(ruff, ['check', '--fix', '--force-exclude'], files);
+  run(ruff, ['format', '--force-exclude'], files);
 }
