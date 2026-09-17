@@ -14,6 +14,6 @@ export default {
     `npm --prefix frontend run lint:fix -- ${toFrontendPaths(files)}`,
     `prettier --write ${quote(files)}`,
   ],
-  '*.{js,cjs,mjs,json,css,yml,yaml}': (files) => [`prettier --write ${quote(files)}`],
+  '*.{js,cjs,mjs,json,css,html,yml,yaml}': (files) => [`prettier --write ${quote(files)}`],
   'backend/**/*.py': (files) => [`node scripts/lint-python.mjs ${quote(files)}`],
 };
