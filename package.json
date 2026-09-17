@@ -1,0 +1,22 @@
+{
+  "name": "darukaa-earth",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Repository tooling for the Darukaa.Earth geospatial analytics platform",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "prepare": "husky",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^19.6.1",
+    "@commitlint/config-conventional": "^19.6.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.3.0",
+    "prettier": "^3.4.2"
+  }
+}
