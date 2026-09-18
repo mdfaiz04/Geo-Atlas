@@ -1,0 +1,94 @@
+/* The first screen: badge, headline, promise and the call to action. */
+.hero {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 72px 24px 56px;
+  text-align: center;
+}
+
+.hero__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 18px;
+  border: 1px solid var(--landing-card-border);
+  border-radius: 999px;
+  background: var(--landing-card);
+  backdrop-filter: blur(10px);
+  color: var(--landing-muted);
+  font-size: 0.9rem;
+  box-shadow: 0 6px 24px -12px rgba(12, 31, 24, 0.25);
+}
+
+.hero__pulse {
+  position: relative;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #3ecf8e;
+}
+
+.hero__pulse::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: #3ecf8e;
+  animation: hero-ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+.hero__title {
+  max-width: 17ch;
+  margin-top: 36px;
+  font-size: clamp(2.6rem, 6.4vw, 5.4rem);
+  font-weight: 800;
+  line-height: 1.04;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
+}
+
+.hero__highlight {
+  background-image: var(--accent-text);
+  background-size: 220% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  animation: hero-shimmer 7s linear infinite;
+}
+
+.hero__lede {
+  max-width: 44ch;
+  margin-top: 28px;
+  color: var(--landing-muted);
+  font-size: clamp(1.08rem, 1.6vw, 1.32rem);
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+.hero__actions {
+  margin-top: 44px;
+}
+
+.hero__note {
+  margin-top: 18px;
+  color: var(--landing-muted);
+  font-size: 0.88rem;
+}
+
+@keyframes hero-ping {
+  75%,
+  100% {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+
+@keyframes hero-shimmer {
+  to {
+    background-position: 220% center;
+  }
+}

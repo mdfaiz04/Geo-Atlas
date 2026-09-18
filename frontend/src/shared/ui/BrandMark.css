@@ -1,0 +1,26 @@
+/* Styles for the logo mark and wordmark. */
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: inherit;
+  font-weight: 750;
+  letter-spacing: -0.02em;
+}
+
+.brand:hover {
+  text-decoration: none;
+}
+
+.brand__mark {
+  flex-shrink: 0;
+  filter: drop-shadow(0 6px 14px rgba(19, 104, 76, 0.35));
+}
+
+.brand__name {
+  font-size: 1.12rem;
+}
+
+.brand__dot {
+  color: #3ecf8e;
+}

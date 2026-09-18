@@ -1,0 +1,78 @@
+/* A browser-framed screenshot of the real dashboard, floating over a soft glow. */
+.preview {
+  position: relative;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.preview::before {
+  content: '';
+  position: absolute;
+  inset: 12% 10% -6%;
+  border-radius: 40px;
+  background: var(--accent-fill);
+  filter: blur(70px);
+  opacity: 0.35;
+}
+
+.preview__frame {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--landing-card-border);
+  border-radius: 18px;
+  background: var(--landing-card);
+  box-shadow: var(--landing-shadow);
+  animation: preview-float 7s ease-in-out infinite;
+}
+
+.preview__bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--landing-card-border);
+}
+
+.preview__light {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #f26d5b;
+}
+
+.preview__light:nth-child(2) {
+  background: #f5b83d;
+}
+
+.preview__light:nth-child(3) {
+  background: #3ecf8e;
+}
+
+.preview__url {
+  flex: 1;
+  max-width: 360px;
+  margin: 0 auto;
+  padding: 4px 14px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--landing-ink) 6%, transparent);
+  color: var(--landing-muted);
+  font-size: 0.78rem;
+  text-align: center;
+}
+
+.preview__image {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+@keyframes preview-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}

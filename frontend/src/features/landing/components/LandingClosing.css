@@ -1,0 +1,42 @@
+/* The closing call to action and the page footer. */
+.closing {
+  position: relative;
+  overflow: hidden;
+  max-width: 1112px;
+  margin: 0 auto 72px;
+  padding: 72px 32px;
+  border-radius: 32px;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(126, 232, 189, 0.35), transparent 50%),
+    linear-gradient(135deg, #0b2a20 0%, #13684c 55%, #1b8a78 100%);
+  color: #f2f8f5;
+  text-align: center;
+  box-shadow: var(--landing-shadow);
+}
+
+.closing__title {
+  font-size: clamp(1.8rem, 3.4vw, 2.7rem);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+}
+
+.closing__text {
+  max-width: 50ch;
+  margin: 14px auto 32px;
+  color: rgba(242, 248, 245, 0.8);
+  font-size: 1.05rem;
+}
+
+.closing .cta {
+  background: #ffffff;
+  color: #0d3325;
+  box-shadow: 0 14px 34px -10px rgba(0, 0, 0, 0.45);
+}
+
+.landing-footer {
+  padding: 28px 24px 40px;
+  border-top: 1px solid var(--landing-card-border);
+  color: var(--landing-muted);
+  font-size: 0.86rem;
+  text-align: center;
+}

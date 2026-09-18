@@ -2,6 +2,7 @@
 import { Suspense } from 'react';
 import { Link, Outlet } from 'react-router-dom';
 import { useAuth } from '@/features/auth/hooks/useAuth';
+import { BrandMark } from '@/shared/ui/BrandMark';
 import { Button } from '@/shared/ui/Button';
 import { Spinner } from '@/shared/ui/Spinner';
 import '@/app/layout/AppLayout.css';
@@ -12,8 +13,8 @@ export function AppLayout() {
   return (
     <div className="layout">
       <header className="layout__header">
-        <Link className="layout__brand" to="/dashboard">
-          Darukaa.earth
+        <Link className="layout__brand" to="/dashboard" aria-label="Darukaa.earth dashboard">
+          <BrandMark size={28} />
         </Link>
         <div className="layout__account">
           {user === null ? null : (

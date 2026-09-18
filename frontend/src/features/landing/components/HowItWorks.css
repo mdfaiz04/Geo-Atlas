@@ -1,0 +1,64 @@
+/* Three numbered steps joined by a soft connecting line. */
+.steps {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 28px;
+  margin-top: 52px;
+  list-style: none;
+  padding: 0;
+}
+
+.steps::before {
+  content: '';
+  position: absolute;
+  top: 27px;
+  left: 16%;
+  right: 16%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(62, 207, 142, 0.55), transparent);
+}
+
+.step {
+  position: relative;
+  text-align: center;
+}
+
+.step__number {
+  display: inline-grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--accent-fill);
+  color: #ffffff;
+  font-size: 1.2rem;
+  font-weight: 800;
+  box-shadow:
+    0 0 0 8px var(--landing-bg),
+    0 14px 30px -10px rgba(19, 104, 76, 0.7);
+}
+
+.step__title {
+  margin-top: 22px;
+  font-size: 1.12rem;
+  font-weight: 700;
+}
+
+.step__text {
+  max-width: 30ch;
+  margin: 8px auto 0;
+  color: var(--landing-muted);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+@media (max-width: 760px) {
+  .steps {
+    grid-template-columns: 1fr;
+  }
+
+  .steps::before {
+    display: none;
+  }
+}
