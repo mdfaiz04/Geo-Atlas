@@ -9,6 +9,7 @@
   --color-primary: #13684c;
   --color-primary-hover: #0d5039;
   --color-primary-soft: #e6f2ed;
+  --color-on-primary: #ffffff;
   --color-accent: #b7822f;
   --color-danger: #a52218;
   --color-danger-soft: #fceceb;
@@ -52,6 +53,7 @@
     --color-primary: #3fae83;
     --color-primary-hover: #56c197;
     --color-primary-soft: #16302639;
+    --color-on-primary: #04140e;
     --color-danger: #f28b82;
     --color-danger-soft: #3a1d1b;
     --chart-series: #3987e5;
