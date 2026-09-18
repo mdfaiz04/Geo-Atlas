@@ -14,8 +14,8 @@ concurrency:
 env:
   PYTHON_VERSION: '3.12'
   NODE_VERSION: '22'
-  API_URL: https://darukaa-earth-api.vercel.app
-  WEB_URL: https://darukaa-earth-web.vercel.app
+  API_URL: https://geo-atlas-api.vercel.app
+  WEB_URL: https://geo-atlas-web.vercel.app
 
 jobs:
   migrate:

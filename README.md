@@ -5,8 +5,8 @@ projects, draw their sites as polygons on a map, and read how each site performs
 
 | | |
 | --- | --- |
-| **Live demo** | <https://darukaa-earth-web.vercel.app> |
-| **API docs** | <https://darukaa-earth-api.vercel.app/docs> |
+| **Live demo** | <https://geo-atlas-web.vercel.app> |
+| **API docs** | <https://geo-atlas-api.vercel.app/docs> |
 | **Stack** | React 18 · Mapbox GL JS · Highcharts · FastAPI · PostgreSQL + PostGIS |
 | **CI/CD** | GitHub Actions → Vercel |
 | **Demo account** | `demo@darukaa.earth` · `DarukaaDemo2026` — four projects and nine sites, ready to explore |

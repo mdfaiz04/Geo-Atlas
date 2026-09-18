@@ -11,7 +11,7 @@ export function ProductPreview() {
           <span className="preview__light" />
           <span className="preview__light" />
           <span className="preview__light" />
-          <span className="preview__url">darukaa-earth-web.vercel.app/dashboard</span>
+          <span className="preview__url">geo-atlas-web.vercel.app/dashboard</span>
         </div>
         <img
           className="preview__image"
