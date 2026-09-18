@@ -3,7 +3,13 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.api.error_handlers import register_error_handlers
-from src.api.routers import auth_router, health_router, projects_router, sites_router
+from src.api.routers import (
+    analytics_router,
+    auth_router,
+    health_router,
+    projects_router,
+    sites_router,
+)
 from src.infrastructure.config.settings import get_settings
 
 
@@ -27,6 +33,7 @@ def create_app() -> FastAPI:
     application.include_router(auth_router.router, prefix=settings.api_prefix)
     application.include_router(projects_router.router, prefix=settings.api_prefix)
     application.include_router(sites_router.router, prefix=settings.api_prefix)
+    application.include_router(analytics_router.router, prefix=settings.api_prefix)
     return application
 
 

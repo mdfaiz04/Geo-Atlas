@@ -4,9 +4,11 @@ from typing import Annotated
 from fastapi import Depends
 
 from src.api.dependencies.database import SessionDep
+from src.api.dependencies.metrics import MetricsSourceDep, SiteMetricRepositoryDep
 from src.api.dependencies.projects import ProjectRepositoryDep
 from src.application.use_cases.create_site import CreateSite
 from src.application.use_cases.delete_site import DeleteSite
+from src.application.use_cases.get_site import GetSite
 from src.application.use_cases.list_portfolio_sites import ListPortfolioSites
 from src.application.use_cases.list_project_sites import ListProjectSites
 from src.domain.repositories.site_repository import SiteRepository
@@ -20,8 +22,17 @@ def get_site_repository(session: SessionDep) -> SiteRepository:
 SiteRepositoryDep = Annotated[SiteRepository, Depends(get_site_repository)]
 
 
-def get_create_site(projects: ProjectRepositoryDep, sites: SiteRepositoryDep) -> CreateSite:
-    return CreateSite(projects, sites)
+def get_create_site(
+    projects: ProjectRepositoryDep,
+    sites: SiteRepositoryDep,
+    metrics: SiteMetricRepositoryDep,
+    metrics_source: MetricsSourceDep,
+) -> CreateSite:
+    return CreateSite(projects, sites, metrics, metrics_source)
+
+
+def get_get_site(projects: ProjectRepositoryDep, sites: SiteRepositoryDep) -> GetSite:
+    return GetSite(projects, sites)
 
 
 def get_list_project_sites(
@@ -41,6 +52,7 @@ def get_delete_site(sites: SiteRepositoryDep) -> DeleteSite:
 
 
 CreateSiteDep = Annotated[CreateSite, Depends(get_create_site)]
+GetSiteDep = Annotated[GetSite, Depends(get_get_site)]
 ListProjectSitesDep = Annotated[ListProjectSites, Depends(get_list_project_sites)]
 ListPortfolioSitesDep = Annotated[ListPortfolioSites, Depends(get_list_portfolio_sites)]
 DeleteSiteDep = Annotated[DeleteSite, Depends(get_delete_site)]

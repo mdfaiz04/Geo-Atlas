@@ -7,6 +7,7 @@ from src.api.dependencies.auth import CurrentUserDep
 from src.api.dependencies.sites import (
     CreateSiteDep,
     DeleteSiteDep,
+    GetSiteDep,
     ListPortfolioSitesDep,
     ListProjectSitesDep,
 )
@@ -49,6 +50,11 @@ def create_site(
         boundary=Polygon.from_coordinates(payload.geometry.coordinates),
     )
     return SiteFeature.from_view(use_case.execute(command))
+
+
+@router.get("/sites/{site_id}", response_model=SiteFeature)
+def read_site(site_id: UUID, current_user: CurrentUserDep, use_case: GetSiteDep) -> SiteFeature:
+    return SiteFeature.from_view(use_case.execute(site_id, current_user.id))
 
 
 @router.delete("/sites/{site_id}", status_code=status.HTTP_204_NO_CONTENT)
