@@ -6,7 +6,10 @@ from src.domain.exceptions import (
     DomainError,
     EmailAlreadyRegisteredError,
     InvalidCredentialsError,
+    InvalidGeometryError,
     InvalidTokenError,
+    ProjectNotFoundError,
+    SiteNotFoundError,
     UserNotFoundError,
 )
 
@@ -15,6 +18,9 @@ STATUS_BY_ERROR: dict[type[DomainError], int] = {
     InvalidCredentialsError: status.HTTP_401_UNAUTHORIZED,
     InvalidTokenError: status.HTTP_401_UNAUTHORIZED,
     UserNotFoundError: status.HTTP_404_NOT_FOUND,
+    ProjectNotFoundError: status.HTTP_404_NOT_FOUND,
+    SiteNotFoundError: status.HTTP_404_NOT_FOUND,
+    InvalidGeometryError: status.HTTP_422_UNPROCESSABLE_ENTITY,
 }
 
 

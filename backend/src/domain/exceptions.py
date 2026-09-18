@@ -23,3 +23,18 @@ class UserNotFoundError(DomainError):
 class InvalidTokenError(DomainError):
     def __init__(self) -> None:
         super().__init__("Token is invalid or has expired")
+
+
+class ProjectNotFoundError(DomainError):
+    def __init__(self) -> None:
+        super().__init__("Project not found")
+
+
+class SiteNotFoundError(DomainError):
+    def __init__(self) -> None:
+        super().__init__("Site not found")
+
+
+class InvalidGeometryError(DomainError):
+    def __init__(self, reason: str) -> None:
+        super().__init__(f"Invalid site boundary: {reason}")
