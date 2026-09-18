@@ -1,6 +1,8 @@
 // Checks the site list shows each site and reports selection and deletion.
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import type { ReactElement } from 'react';
+import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it, vi } from 'vitest';
 import { SiteList } from '@/features/sites/components/SiteList';
 import type { SiteFeature } from '@/features/sites/types';
@@ -23,11 +25,18 @@ function site(id: string, name: string, areaHectares: number): SiteFeature {
   };
 }
 
+// Renders inside a router because each row links to its analytics page.
+function renderWithRouter(element: ReactElement) {
+  return render(<MemoryRouter>{element}</MemoryRouter>);
+}
+
 const SITES = [site('a', 'North block', 109.3), site('b', 'South block', 42)];
 
 describe('SiteList', () => {
   it('shows every site with its area', () => {
-    render(<SiteList sites={SITES} selectedSiteId={null} onSelect={vi.fn()} onDelete={vi.fn()} />);
+    renderWithRouter(
+      <SiteList sites={SITES} selectedSiteId={null} onSelect={vi.fn()} onDelete={vi.fn()} />,
+    );
 
     expect(screen.getByText('North block')).toBeInTheDocument();
     expect(screen.getByText('109.3 ha')).toBeInTheDocument();
@@ -35,7 +44,9 @@ describe('SiteList', () => {
   });
 
   it('marks the selected site', () => {
-    render(<SiteList sites={SITES} selectedSiteId="b" onSelect={vi.fn()} onDelete={vi.fn()} />);
+    renderWithRouter(
+      <SiteList sites={SITES} selectedSiteId="b" onSelect={vi.fn()} onDelete={vi.fn()} />,
+    );
 
     expect(screen.getByRole('button', { name: /^South block/ })).toHaveAttribute(
       'aria-pressed',
@@ -46,7 +57,7 @@ describe('SiteList', () => {
   it('reports which site was selected or deleted', async () => {
     const onSelect = vi.fn();
     const onDelete = vi.fn();
-    render(
+    renderWithRouter(
       <SiteList sites={SITES} selectedSiteId={null} onSelect={onSelect} onDelete={onDelete} />,
     );
 

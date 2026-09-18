@@ -46,3 +46,11 @@
     max-height: none;
   }
 }
+
+.dashboard__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  font-size: 0.9rem;
+  font-weight: 600;
+}

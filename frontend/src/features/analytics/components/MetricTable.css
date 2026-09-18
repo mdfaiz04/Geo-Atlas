@@ -1,0 +1,46 @@
+/* Styles for the table view of the chart data. */
+.metric-table {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-surface-raised);
+}
+
+.metric-table__summary {
+  padding: var(--space-3) var(--space-4);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.metric-table__scroll {
+  max-height: 360px;
+  overflow: auto;
+  border-top: 1px solid var(--color-border);
+}
+
+.metric-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.metric-table th,
+.metric-table td {
+  padding: var(--space-2) var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.metric-table th:first-child {
+  text-align: left;
+}
+
+.metric-table thead th {
+  position: sticky;
+  top: 0;
+  background-color: var(--color-surface-raised);
+  color: var(--color-text-muted);
+  font-weight: 600;
+}

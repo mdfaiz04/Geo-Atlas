@@ -6,6 +6,11 @@ const dateFormat = new Intl.DateTimeFormat('en-IN', {
   month: 'short',
   year: 'numeric',
 });
+const monthFormat = new Intl.DateTimeFormat('en-IN', {
+  month: 'short',
+  year: 'numeric',
+  timeZone: 'UTC',
+});
 
 export function formatHectares(hectares: number): string {
   return `${hectareFormat.format(hectares)} ha`;
@@ -17,4 +22,8 @@ export function formatCount(count: number): string {
 
 export function formatDate(isoDate: string): string {
   return dateFormat.format(new Date(isoDate));
+}
+
+export function formatMonth(isoDate: string): string {
+  return monthFormat.format(new Date(isoDate));
 }

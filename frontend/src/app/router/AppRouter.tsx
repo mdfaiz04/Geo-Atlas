@@ -14,6 +14,10 @@ const ProjectPage = lazy(() =>
   import('@/pages/project/ProjectPage').then((module) => ({ default: module.ProjectPage })),
 );
 
+const SitePage = lazy(() =>
+  import('@/pages/site/SitePage').then((module) => ({ default: module.SitePage })),
+);
+
 export function AppRouter() {
   return (
     <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
@@ -24,6 +28,7 @@ export function AppRouter() {
           <Route element={<AppLayout />}>
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/projects/:projectId" element={<ProjectPage />} />
+            <Route path="/sites/:siteId" element={<SitePage />} />
           </Route>
         </Route>
         <Route path="*" element={<Navigate to="/dashboard" replace />} />

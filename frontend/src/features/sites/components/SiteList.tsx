@@ -1,4 +1,5 @@
 // Selectable list of sites with a delete action on each row.
+import { Link } from 'react-router-dom';
 import type { SiteFeature } from '@/features/sites/types';
 import { formatHectares } from '@/shared/lib/format';
 import '@/features/sites/components/SiteList.css';
@@ -34,6 +35,13 @@ export function SiteList({
             <span className="site-row__name">{site.name}</span>
             <span className="site-row__area">{formatHectares(site.areaHectares)}</span>
           </button>
+          <Link
+            className="site-row__link"
+            to={`/sites/${site.id}`}
+            aria-label={`Analytics for ${site.name}`}
+          >
+            Analytics
+          </Link>
           <button
             type="button"
             className="site-row__delete"

@@ -1,0 +1,27 @@
+/* Styles for the year-on-year change indicator. */
+.delta {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.3rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.delta--up {
+  color: var(--status-good);
+}
+
+.delta--down {
+  color: var(--status-critical);
+}
+
+.delta--flat,
+.delta--none {
+  color: var(--color-text-muted);
+}
+
+.delta__baseline {
+  font-weight: 400;
+  color: var(--color-text-muted);
+}

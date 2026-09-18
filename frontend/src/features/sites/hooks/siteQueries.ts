@@ -6,6 +6,7 @@ import {
   deleteSite,
   fetchPortfolioSites,
   fetchProjectSites,
+  fetchSite,
 } from '@/features/sites/api/sitesApi';
 import type { CreateSiteInput } from '@/features/sites/types';
 import { queryKeys } from '@/shared/api/queryKeys';
@@ -29,6 +30,10 @@ export function useProjectSites(projectId: string) {
   });
 }
 
+export function useSite(siteId: string) {
+  return useQuery({ queryKey: queryKeys.site(siteId), queryFn: () => fetchSite(siteId) });
+}
+
 export function useCreateSite(projectId: string) {
   const queryClient = useQueryClient();
   return useMutation({
@@ -41,6 +46,9 @@ export function useDeleteSite() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: deleteSite,
-    onSuccess: () => refreshSiteData(queryClient),
+    onSuccess: (_result, siteId) => {
+      queryClient.removeQueries({ queryKey: queryKeys.site(siteId) });
+      return refreshSiteData(queryClient);
+    },
   });
 }

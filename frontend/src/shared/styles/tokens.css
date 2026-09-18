@@ -30,6 +30,12 @@
   --shadow-sm: 0 1px 2px rgba(16, 32, 26, 0.06);
   --shadow-md: 0 10px 30px rgba(16, 32, 26, 0.08);
 
+  --chart-series: #2a78d6;
+  --chart-grid: #e6ece9;
+  --chart-crosshair: #b4c2bb;
+  --status-good: #0ca30c;
+  --status-critical: #d03b3b;
+
   --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --transition: 150ms ease;
   --header-height: 64px;
@@ -48,6 +54,9 @@
     --color-primary-soft: #16302639;
     --color-danger: #f28b82;
     --color-danger-soft: #3a1d1b;
+    --chart-series: #3987e5;
+    --chart-grid: #22332e;
+    --chart-crosshair: #46594f;
     --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
     --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.45);
   }

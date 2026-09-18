@@ -15,6 +15,8 @@
   "dependencies": {
     "@mapbox/mapbox-gl-draw": "^1.5.2",
     "@tanstack/react-query": "^5.103.1",
+    "highcharts": "^13.0.2",
+    "highcharts-react-official": "^3.2.3",
     "mapbox-gl": "^3.31.0",
     "polylabel": "^2.1.0",
     "react": "^18.3.1",

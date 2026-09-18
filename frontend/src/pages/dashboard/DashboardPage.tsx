@@ -86,7 +86,12 @@ export function DashboardPage() {
               <SiteDetailsCard
                 site={selectedSite}
                 onClose={() => setSelectedSiteId(null)}
-                action={<Link to={`/projects/${selectedSite.projectId}`}>Open project →</Link>}
+                action={
+                  <div className="dashboard__actions">
+                    <Link to={`/sites/${selectedSite.id}`}>View analytics →</Link>
+                    <Link to={`/projects/${selectedSite.projectId}`}>Open project</Link>
+                  </div>
+                }
               />
             </div>
           )}

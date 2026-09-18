@@ -49,6 +49,10 @@ export async function fetchProjectSites(projectId: string): Promise<SiteCollecti
   return toSiteCollection(await apiRequest<SiteCollectionResponse>(`/projects/${projectId}/sites`));
 }
 
+export async function fetchSite(siteId: string): Promise<SiteFeature> {
+  return toSiteFeature(await apiRequest<SiteFeatureResponse>(`/sites/${siteId}`));
+}
+
 export async function createSite(projectId: string, input: CreateSiteInput): Promise<SiteFeature> {
   const response = await apiRequest<SiteFeatureResponse>(`/projects/${projectId}/sites`, {
     method: 'POST',
