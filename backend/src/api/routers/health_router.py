@@ -3,7 +3,7 @@ from fastapi import APIRouter
 from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 
-from src.api.dependencies import SessionDep, SettingsDep
+from src.api.dependencies.database import SessionDep, SettingsDep
 from src.api.schemas.health_schemas import HealthResponse
 
 router = APIRouter(tags=["System"])

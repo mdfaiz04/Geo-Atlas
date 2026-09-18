@@ -1,10 +1,10 @@
-# Wires concrete implementations into the use cases for every request.
+# Wires hashing, tokens and the user repository into the authentication use cases.
 from typing import Annotated
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-from sqlalchemy.orm import Session
 
+from src.api.dependencies.database import SessionDep, SettingsDep
 from src.application.dto.auth_dto import AuthenticatedUser
 from src.application.ports.password_hasher import PasswordHasher
 from src.application.ports.token_service import TokenService
@@ -13,16 +13,11 @@ from src.application.use_cases.authenticate_user import AuthenticateUser
 from src.application.use_cases.get_authenticated_user import GetAuthenticatedUser
 from src.application.use_cases.register_user import RegisterUser
 from src.domain.repositories.user_repository import UserRepository
-from src.infrastructure.config.settings import Settings, get_settings
-from src.infrastructure.database.session import get_session
 from src.infrastructure.repositories.sqlalchemy_user_repository import SqlAlchemyUserRepository
 from src.infrastructure.security.bcrypt_password_hasher import BcryptPasswordHasher
 from src.infrastructure.security.jwt_token_service import JwtTokenService
 
 bearer_scheme = HTTPBearer(auto_error=False)
-
-SessionDep = Annotated[Session, Depends(get_session)]
-SettingsDep = Annotated[Settings, Depends(get_settings)]
 
 
 def get_user_repository(session: SessionDep) -> UserRepository:

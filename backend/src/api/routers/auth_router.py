@@ -1,7 +1,7 @@
 # Registration, login and current-user endpoints.
 from fastapi import APIRouter, status
 
-from src.api.dependencies import AuthenticateUserDep, CurrentUserDep, RegisterUserDep
+from src.api.dependencies.auth import AuthenticateUserDep, CurrentUserDep, RegisterUserDep
 from src.api.schemas.auth_schemas import AuthResponse, LoginRequest, RegisterRequest, UserResponse
 from src.application.dto.auth_dto import LoginCommand, RegisterCommand
 

@@ -1,6 +1,6 @@
 # Fixtures that exercise the API against a real PostGIS database.
 import os
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator
 from pathlib import Path
 
 import pytest
@@ -9,7 +9,7 @@ from sqlalchemy import create_engine, text
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import NullPool
 
-BACKEND_DIR = Path(__file__).resolve().parents[1]
+BACKEND_DIR = Path(__file__).resolve().parents[2]
 TEST_DATABASE_NAME = "darukaa_test"
 ADMIN_DATABASE_URL = os.environ.get(
     "ADMIN_DATABASE_URL", "postgresql://darukaa:darukaa@localhost:5432/postgres"
@@ -70,3 +70,15 @@ def client(db_session: Session) -> Iterator[TestClient]:
     with TestClient(app) as test_client:
         yield test_client
     app.dependency_overrides.clear()
+
+
+@pytest.fixture
+def auth_headers(client: TestClient) -> Callable[..., dict[str, str]]:
+    def register(email: str = "admin@darukaa.earth") -> dict[str, str]:
+        response = client.post(
+            "/api/v1/auth/register",
+            json={"email": email, "full_name": "Test Administrator", "password": "Password123!"},
+        )
+        return {"Authorization": f"Bearer {response.json()['access_token']}"}
+
+    return register
