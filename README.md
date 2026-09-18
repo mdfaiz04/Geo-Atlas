@@ -392,15 +392,23 @@ than discovered to be broken at deploy time.
 
 ### `deploy.yml` — runs only after CI succeeds on `main`
 
-Triggered by `workflow_run`, gated on `conclusion == 'success'`:
+Triggered by `workflow_run` and gated on `conclusion == 'success'` (a manual **Run workflow** button
+is also available for redeploying without a code change):
 
-1. **`migrate`** — applies `alembic upgrade head` to the production database, then seeds the demo
-   portfolio (a no-op once it exists).
+1. **`migrate`** — applies `alembic upgrade head` to the production database over Neon's direct,
+   unpooled connection, then seeds the demo portfolio (a no-op once it exists).
 2. **`deploy-api`** — builds and promotes the FastAPI serverless function on Vercel.
 3. **`deploy-web`** — builds and promotes the React app on Vercel.
+4. **`smoke-test`** — calls the live `/health` endpoint and requires `"database":"connected"`, then
+   checks the website serves the app. A broken release turns the run red instead of passing
+   silently.
 
 The jobs are sequential on purpose: the schema is always ahead of the code that reads it, and the
 frontend only goes live once the API it talks to is already deployed.
+
+Every job checks out `workflow_run.head_sha` — **the exact commit CI tested**. A plain checkout in
+a `workflow_run` job takes whatever is newest on `main`, which may be a later commit that has not
+passed CI yet.
 
 Vercel's own Git integration is **disabled** (`"git": { "deploymentEnabled": false }` in both
 `vercel.json` files). Left on, Vercel would deploy every push including ones with failing tests,
@@ -418,7 +426,7 @@ which would defeat the purpose of the pipeline.
 
 ### Enabling deployment
 
-The deploy workflow stays dormant until the repository variable `DEPLOY_ENABLED` is set to `true`
+Deployment is **enabled**. The workflow stays dormant unless the repository variable `DEPLOY_ENABLED` is `true`
 (**Settings → Secrets and variables → Actions → Variables**). Until then CI still runs on every
 push, and the release pipeline is simply skipped rather than failing on missing credentials. Set
 the six secrets listed above first, then flip the variable.
