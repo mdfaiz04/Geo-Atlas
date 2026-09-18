@@ -301,7 +301,7 @@ darukaa-earth/
 
 ### Prerequisites
 
-Docker, Node.js 20+, Python 3.12, Git.
+Docker, Node.js 22+, [uv](https://docs.astral.sh/uv/) (it installs Python 3.12 for you), Git.
 
 ### 1. Start the database
 
@@ -316,15 +316,11 @@ This starts PostgreSQL 16 with PostGIS 3.4 on `localhost:5432` (user, password a
 
 ```bash
 cd backend
-python -m venv .venv
-.venv/Scripts/activate        # Windows
-source .venv/bin/activate     # macOS and Linux
-
-pip install -r requirements-dev.txt
-cp .env.example .env          # then set JWT_SECRET_KEY to 32+ characters
-alembic upgrade head
-python -m src.cli.seed_demo    # optional: the demo account and portfolio
-uvicorn src.main:app --reload --port 8000
+uv sync --group dev                          # exact versions from uv.lock, Python 3.12
+cp .env.example .env                         # then set JWT_SECRET_KEY to 32+ characters
+uv run --group dev alembic upgrade head
+uv run --group dev python -m src.cli.seed_demo   # optional: the demo account and portfolio
+uv run --group dev uvicorn src.main:app --reload --port 8000
 ```
 
 API: <http://localhost:8000> · interactive docs: <http://localhost:8000/docs>
@@ -351,7 +347,7 @@ npm install
 ### Test suites
 
 ```bash
-cd backend  && pytest                    # 65 tests: domain unit tests + API tests on real PostGIS
+cd backend  && uv run --group dev pytest # 65 tests: domain unit tests + API tests on real PostGIS
 cd frontend && npm run test              # 33 tests: components, charts, search, API client, geometry
 ```
 
@@ -431,12 +427,13 @@ Deployment is **enabled**. The workflow stays dormant unless the repository vari
 push, and the release pipeline is simply skipped rather than failing on missing credentials. Set
 the six secrets listed above first, then flip the variable.
 
-Two Vercel details the deployment depends on. First, Vercel's Python builder installs dependencies
-from `pyproject.toml` when one is present, and ours holds only tool settings, so
-`backend/.vercelignore` leaves it out and the runtime is pinned by `backend/.python-version`;
-`requirements.txt` is then the single deployment manifest. Second, both `.vercelignore` files keep
-`.env` files, virtualenvs and `node_modules` out of the upload, because Vercel does not read
-`.gitignore`.
+Two Vercel details the deployment depends on. First, the Python dependencies live in one place:
+`pyproject.toml`, locked by `uv.lock`. Vercel's Python builder reads exactly that, the same lockfile
+drives local development and CI, and `backend/.python-version` pins 3.12 everywhere. Development
+tools sit in a separate `dev` group that production never installs, and `excludeFiles` in
+`vercel.json` keeps tests and migrations out of the function bundle. Second, both `.vercelignore`
+files keep `.env` files, virtualenvs and `node_modules` out of the upload, because Vercel does not
+read `.gitignore`.
 
 Runtime configuration lives in each Vercel project, not in GitHub:
 
@@ -559,6 +556,12 @@ token, waits for a pause in typing before querying, caches results, and is fully
 operable. Results show their region, because there are two places called Gurugram. The token is a
 public `pk.` token by design; in production it would be restricted to the site's URL in the
 Mapbox console.
+
+**uv with a lockfile, one dependency list.** Dependencies are declared once in `pyproject.toml`
+and pinned in `uv.lock`, so a laptop, CI and production resolve the identical 47 packages. An
+earlier version kept a separate `requirements.txt`; Vercel's builder reads `pyproject.toml`
+first, found no dependencies there and shipped an API without FastAPI. Collapsing to one source
+removed that whole class of drift.
 
 **No path filtering in CI.** Every job runs on every change. For a repository this size the whole
 pipeline finishes in about two minutes, and running everything removes any chance of a change

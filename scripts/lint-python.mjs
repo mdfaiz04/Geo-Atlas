@@ -17,7 +17,7 @@ function resolveRuff() {
 function run(ruff, args, files) {
   const result = spawnSync(ruff, [...args, ...files], { stdio: 'inherit', shell: false });
   if (result.error) {
-    console.error('\nRuff not found. Run: pip install -r backend/requirements-dev.txt\n');
+    console.error('\nRuff not found. Run: cd backend && uv sync --group dev\n');
     process.exit(1);
   }
   if (result.status !== 0) {

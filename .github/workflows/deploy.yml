@@ -32,20 +32,21 @@ jobs:
       - uses: actions/checkout@v7
         with:
           ref: ${{ github.event.workflow_run.head_sha || github.sha }}
-      - uses: actions/setup-python@v7
+      - uses: astral-sh/setup-uv@v10.1.0
         with:
-          python-version: ${{ env.PYTHON_VERSION }}
-      - run: pip install -r requirements-dev.txt
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
+      - run: uv sync --frozen --group dev
       - name: Upgrade schema to head
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
-        run: alembic upgrade head
+        run: uv run --no-sync alembic upgrade head
       - name: Seed the demo portfolio
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
-        run: python -m src.cli.seed_demo
+        run: uv run --no-sync python -m src.cli.seed_demo
 
   deploy-api:
     name: Deploy API
