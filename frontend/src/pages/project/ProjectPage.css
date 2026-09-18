@@ -1,0 +1,47 @@
+/* Layout for a single project: the map beside a panel of its sites. */
+.project-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.project-workspace {
+  display: grid;
+  grid-template-columns: 1fr minmax(280px, 340px);
+  gap: var(--space-5);
+  min-height: 600px;
+}
+
+.project-workspace__map {
+  min-height: 600px;
+}
+
+.project-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.project-sidebar__heading {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+}
+
+.project-sidebar__hint {
+  color: var(--color-text-muted);
+  font-size: 0.88rem;
+}
+
+@media (max-width: 960px) {
+  .project-workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .project-workspace__map {
+    min-height: 420px;
+  }
+}

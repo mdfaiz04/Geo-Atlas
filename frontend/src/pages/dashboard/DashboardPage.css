@@ -1,0 +1,48 @@
+/* Two-column portfolio layout: projects on the left, the map on the right. */
+.dashboard {
+  display: grid;
+  grid-template-columns: minmax(300px, 380px) 1fr;
+  gap: var(--space-5);
+  min-height: 560px;
+}
+
+.dashboard__projects {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  max-height: 640px;
+  overflow-y: auto;
+  padding-right: var(--space-1);
+}
+
+.dashboard__heading {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+}
+
+.dashboard__map {
+  position: relative;
+  min-height: 560px;
+}
+
+.dashboard__selection {
+  position: absolute;
+  right: var(--space-4);
+  bottom: var(--space-7);
+  z-index: 2;
+  width: min(320px, calc(100% - 2rem));
+  box-shadow: var(--shadow-md);
+}
+
+@media (max-width: 960px) {
+  .dashboard {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard__projects {
+    max-height: none;
+  }
+}

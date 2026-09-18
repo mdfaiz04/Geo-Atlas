@@ -1,0 +1,49 @@
+/* Styles for the new-project form and its type picker. */
+.project-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.type-picker {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+  border: none;
+  padding: 0;
+}
+
+.type-picker__legend {
+  margin-bottom: var(--space-2);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.type-option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: border-color var(--transition);
+}
+
+.type-option:has(input:checked) {
+  border-color: var(--color-primary);
+  background-color: var(--color-primary-soft);
+}
+
+.type-option input {
+  accent-color: var(--color-primary);
+}
+
+.project-form__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+}

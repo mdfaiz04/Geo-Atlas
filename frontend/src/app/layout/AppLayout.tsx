@@ -1,7 +1,9 @@
 // Header and content frame shown on every signed-in screen.
-import { Outlet } from 'react-router-dom';
+import { Suspense } from 'react';
+import { Link, Outlet } from 'react-router-dom';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { Button } from '@/shared/ui/Button';
+import { Spinner } from '@/shared/ui/Spinner';
 import '@/app/layout/AppLayout.css';
 
 export function AppLayout() {
@@ -10,7 +12,9 @@ export function AppLayout() {
   return (
     <div className="layout">
       <header className="layout__header">
-        <span className="layout__brand">Darukaa.earth</span>
+        <Link className="layout__brand" to="/dashboard">
+          Darukaa.earth
+        </Link>
         <div className="layout__account">
           {user === null ? null : (
             <div className="layout__user">
@@ -24,7 +28,9 @@ export function AppLayout() {
         </div>
       </header>
       <main className="layout__main">
-        <Outlet />
+        <Suspense fallback={<Spinner />}>
+          <Outlet />
+        </Suspense>
       </main>
     </div>
   );

@@ -8,7 +8,11 @@ export default defineConfig({
     alias: { '@': path.resolve(__dirname, 'src') },
   },
   server: { port: 5173 },
-  build: { outDir: 'dist', sourcemap: false },
+  build: {
+    outDir: 'dist',
+    sourcemap: false,
+    chunkSizeWarningLimit: 2000,
+  },
   test: {
     environment: 'jsdom',
     globals: true,
