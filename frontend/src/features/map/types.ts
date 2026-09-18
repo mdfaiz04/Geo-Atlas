@@ -9,3 +9,11 @@ export interface MapSiteProperties {
 }
 
 export type MapSiteCollection = FeatureCollection<Polygon, MapSiteProperties>;
+
+export interface Place {
+  id: string;
+  name: string;
+  context: string;
+  center: [number, number];
+  bounds: [number, number, number, number] | null;
+}

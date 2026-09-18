@@ -133,6 +133,7 @@ export function ProjectPage() {
             onSelectSite={handleSelectSite}
             drawing={mode !== 'browse'}
             onBoundaryDrawn={handleBoundaryDrawn}
+            searchable
           />
         </div>
         <ProjectSidebar

@@ -16,7 +16,7 @@
 
 .map-legend {
   position: absolute;
-  top: var(--space-3);
+  bottom: 36px;
   left: var(--space-3);
   z-index: 1;
   display: flex;
