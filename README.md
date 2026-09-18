@@ -8,6 +8,7 @@ projects, draw their sites as polygons on a map, and read how each site performs
 | **Live demo** | _added when the Vercel deployment is provisioned_ |
 | **Stack** | React 18 · Mapbox GL JS · Highcharts · FastAPI · PostgreSQL + PostGIS |
 | **CI/CD** | GitHub Actions → Vercel |
+| **Demo account** | `demo@darukaa.earth` · `DarukaaDemo2026` — four projects and nine sites, ready to explore |
 
 ---
 
@@ -15,6 +16,9 @@ projects, draw their sites as polygons on a map, and read how each site performs
 
 - [Architecture](#architecture)
 - [Database schema](#database-schema)
+- [Demo account](#demo-account)
+- [Site analytics and where the data comes from](#site-analytics-and-where-the-data-comes-from)
+- [Chart design](#chart-design)
 - [API reference](#api-reference)
 - [Project structure](#project-structure)
 - [Running locally](#running-locally)
@@ -121,7 +125,7 @@ Four tables. `sites.geom` is a real PostGIS geometry, not a pair of floats.
 | --- | --- | --- |
 | `id` | `uuid` | primary key |
 | `site_id` | `uuid` | → `sites.id`, `ON DELETE CASCADE` |
-| `metric_type` | `varchar(50)` | e.g. `carbon_stock`, `canopy_cover` |
+| `metric_type` | `varchar(50)` | `carbon_density`, `ndvi`, `canopy_cover` or `species_richness` |
 | `recorded_at` | `date` | |
 | `value` | `numeric(14,4)` | |
 | `unit` | `varchar(20)` | |
@@ -132,6 +136,102 @@ queries behind the site analytics charts — one index covering filter and sort.
 **Why SRID 4326:** it is the coordinate system Mapbox emits, so polygons are stored exactly as
 drawn with no reprojection. Area is computed by casting to `geography`, which returns true square
 metres rather than degrees.
+
+---
+
+## Demo account
+
+Sign in with **`demo@darukaa.earth`** / **`DarukaaDemo2026`** to see a populated portfolio without
+drawing anything first. It holds four projects on real Indian landscapes — Aravalli forest
+restoration near Gurugram, the Sundarbans mangrove belt, Kodagu agroforestry and a Kaziranga
+grassland corridor — with nine sites between them. The boundaries are illustrative, drawn around
+real places.
+
+The seed is created by `python -m src.cli.seed_demo`. It goes through the same use cases as the
+API, so demo data has to pass the same rules — valid geometry, no overlapping sites — and gets
+its monitoring history the same way a newly drawn site does. It is idempotent: the deploy
+pipeline runs it on every release and it does nothing once the account exists.
+
+---
+
+## Site analytics and where the data comes from
+
+Clicking a site opens its analytics: total carbon stock as the headline figure, the latest
+reading of each metric with its change since the same month last year, and a trend chart per
+metric over 12, 24 or 36 months.
+
+| Metric | Unit | What it represents |
+| --- | --- | --- |
+| Carbon density | tCO₂e/ha | carbon stored per hectare; total stock is density × measured area |
+| NDVI | index 0–1 | satellite greenness, from bare ground to dense canopy |
+| Canopy cover | % | share of the site under tree canopy |
+| Species richness | species | distinct species recorded in the monthly survey |
+
+### The data is simulated — deliberately, and behind an interface
+
+The brief allows any dataset as long as the choice is explained, so here it is. Real per-polygon
+history for these metrics needs Google Earth Engine or Sentinel Hub accounts, minutes of
+processing per request, and field surveys for species counts. A reviewer could not run that
+without credentials, and a demo that depends on it breaks the moment a quota runs out.
+
+So each new site receives a **simulated monitoring feed**, generated once and stored in
+`site_metrics` like real observations would be. It is not random noise. It follows a small,
+explainable model:
+
+- **Seasonality.** Vegetation follows the Indian monsoon — greenest around September, driest
+  around April — through a cosine over the calendar month. NDVI, canopy and species counts all
+  carry it, so the charts show a real seasonal rhythm.
+- **Restoration growth.** Carbon density rises steadily from a baseline of 40–90 tCO₂e/ha.
+  Carbon projects gain 4–9 tCO₂e/ha a year, biodiversity projects 1.5–4. Biodiversity projects
+  gain more species (12–28 over three years) than carbon projects do (3–10). Tests assert both.
+- **Disturbance.** About three sites in ten suffer a dry-season fire in April of year two: carbon
+  drops by 6% of its baseline and stays lower, while vegetation and species dip and recover over
+  four months. This is the kind of event performance-over-time analytics exists to surface.
+- **Repeatable.** The generator is seeded with the site's UUID, so a site always gets the same
+  history, and every value stays physically possible (NDVI 0.05–0.95, canopy 0–100%).
+
+Metrics are stored **per hectare**, never as totals. That keeps sites of different sizes
+comparable and keeps every value small enough to fit the column whatever area is drawn. Totals
+are derived at read time.
+
+**Replacing it is one class.** The use case depends on the `SiteMetricsSource` port, not on the
+simulation. A Sentinel-2 NDVI provider would implement the same `history()` method and be wired in
+`api/dependencies/metrics.py`; nothing in the domain, the API or the frontend changes. The UI
+also labels the data as simulated, so no one mistakes it for field measurements.
+
+### Year-on-year, not month-on-month
+
+Every "change" figure compares the latest month with **the same month a year earlier**. Comparing
+September with August would mostly measure the monsoon, not the project; comparing September with
+last September removes the season and leaves the trend.
+
+---
+
+## Chart design
+
+The charts follow a written data-visualisation method rather than library defaults.
+
+- **One axis per chart.** NDVI (0–1) and canopy cover (%) were first planned as a dual-axis chart.
+  Two scales on one chart let the reader infer relationships the data does not support, so each
+  metric has its own chart, arranged as small multiples.
+- **One validated colour.** Each chart shows a single series, so all four share one hue and the
+  title names the metric — no legend box. The colour was checked with a palette validator rather
+  than by eye: it passes lightness, chroma and 3:1 contrast in both light and dark mode, and the
+  dark theme uses its own step (`#3987e5`) rather than an automatic inversion.
+- **Quiet marks.** 2px lines, a 10% area wash on the headline carbon chart, 1px solid gridlines,
+  and a value label on the newest reading only, placed beside its end-dot.
+- **Hover and a table.** A crosshair and tooltip show the value first and the month second. Every
+  number is also available in a "View the readings as a table" section, so nothing depends on
+  hovering or on colour.
+- **Changes never rely on colour.** Year-on-year changes carry an arrow, the percentage and the
+  month they compare against, plus text for screen readers.
+
+The map's project-type colours were validated too. On the dark satellite imagery they pass
+colour-blind separation, normal-vision separation and contrast. They sit outside the validator's
+lightness band, which is a rule for solid chart marks on a flat background. These are outlines
+and translucent fills over photographs, where darker in-band colours disappear into the terrain,
+so that one check is a deliberate, documented exception. Project type is also always given in
+text — legend, badge and details card — so colour is never the only signal.
 
 ---
 
@@ -152,6 +252,8 @@ Every endpoint below `/api/v1` requires a `Bearer` token. Interactive documentat
 | `GET` | `/projects/{id}/sites` | the project's sites as a GeoJSON `FeatureCollection` |
 | `POST` | `/projects/{id}/sites` | save a drawn polygon; PostGIS validates it and measures its area |
 | `GET` | `/sites` | every site in the portfolio as one `FeatureCollection` |
+| `GET` | `/sites/{id}` | one site as a GeoJSON `Feature` |
+| `GET` | `/sites/{id}/analytics` | metric series with latest value, year-on-year change and total carbon stock |
 | `DELETE` | `/sites/{id}` | delete a site |
 | `GET` | `/health` | service, database and PostGIS status (unauthenticated) |
 
@@ -182,7 +284,7 @@ darukaa-earth/
 ├── backend/
 │   ├── alembic/           migration environment and versioned migrations
 │   ├── api/index.py       Vercel serverless entry point
-│   ├── src/               domain · application · infrastructure · api
+│   ├── src/               domain · application · infrastructure · api · cli
 │   └── tests/             pytest suite running against real PostGIS
 ├── frontend/
 │   ├── src/               app · features · shared
@@ -220,6 +322,7 @@ source .venv/bin/activate     # macOS and Linux
 pip install -r requirements-dev.txt
 cp .env.example .env          # then set JWT_SECRET_KEY to 32+ characters
 alembic upgrade head
+python -m src.cli.seed_demo    # optional: the demo account and portfolio
 uvicorn src.main:app --reload --port 8000
 ```
 
@@ -247,8 +350,8 @@ npm install
 ### Test suites
 
 ```bash
-cd backend  && pytest                    # 41 tests: domain unit tests + API tests on real PostGIS
-cd frontend && npm run test              # 19 tests: components, API client, map geometry
+cd backend  && pytest                    # 65 tests: domain unit tests + API tests on real PostGIS
+cd frontend && npm run test              # 33 tests: components, charts, search, API client, geometry
 ```
 
 ### Environment variables
@@ -290,7 +393,8 @@ than discovered to be broken at deploy time.
 
 Triggered by `workflow_run`, gated on `conclusion == 'success'`:
 
-1. **`migrate`** — applies `alembic upgrade head` to the production database.
+1. **`migrate`** — applies `alembic upgrade head` to the production database, then seeds the demo
+   portfolio (a no-op once it exists).
 2. **`deploy-api`** — builds and promotes the FastAPI serverless function on Vercel.
 3. **`deploy-web`** — builds and promotes the React app on Vercel.
 
@@ -308,6 +412,22 @@ which would defeat the purpose of the pipeline.
 | `VERCEL_TOKEN`, `VERCEL_ORG_ID` | both deploy jobs |
 | `VERCEL_PROJECT_ID_API`, `VERCEL_PROJECT_ID_WEB` | the matching deploy job |
 | `DATABASE_URL`, `JWT_SECRET_KEY` | the migration job |
+
+---
+
+### Enabling deployment
+
+The deploy workflow stays dormant until the repository variable `DEPLOY_ENABLED` is set to `true`
+(**Settings → Secrets and variables → Actions → Variables**). Until then CI still runs on every
+push, and the release pipeline is simply skipped rather than failing on missing credentials. Set
+the six secrets listed above first, then flip the variable.
+
+Runtime configuration lives in each Vercel project, not in GitHub:
+
+| Vercel project | Environment variables |
+| --- | --- |
+| API | `DATABASE_URL` (Neon pooled string), `JWT_SECRET_KEY`, `CORS_ORIGINS` (the web app's URL), `ENVIRONMENT=production` |
+| Web | `VITE_API_BASE_URL` (the API's URL), `VITE_MAPBOX_TOKEN` |
 
 ---
 
@@ -411,6 +531,19 @@ and invalidation keeps related views consistent — saving a site refreshes the 
 its site list and the portfolio map together. The cache is cleared on sign-in and sign-out so one
 account can never see another's data from memory.
 
+**Highcharts, not Chart.js.** The brief allowed either. Highcharts has a stronger datetime axis,
+built-in crosshairs and an accessibility module that exposes charts to screen readers. The
+trade-off is licensing: Highcharts is free for non-commercial use such as this evaluation, and a
+commercial product would need a licence or a move to MIT-licensed Chart.js. The chart options are
+built in one pure function (`metricChartOptions`), so that switch would be contained.
+
+**Place search on the project map.** Drawing a site starts from a view of all India, and panning
+to a village by hand is slow. The search box uses the Mapbox Geocoding API with the same public
+token, waits for a pause in typing before querying, caches results, and is fully keyboard
+operable. Results show their region, because there are two places called Gurugram. The token is a
+public `pk.` token by design; in production it would be restricted to the site's URL in the
+Mapbox console.
+
 **No path filtering in CI.** Every job runs on every change. For a repository this size the whole
 pipeline finishes in about two minutes, and running everything removes any chance of a change
 slipping through because a filter was slightly wrong.
@@ -427,12 +560,6 @@ sign-up, deployment pipeline.
 polygon drawing with Mapbox Draw, boundaries validated and measured by PostGIS, and strict
 per-owner data isolation.
 
-**Phase 3 — analytics and polish.** Site detail screen with Highcharts time series, seeded dataset
-with documented provenance, UI refinement, final documentation.
-
-### Enabling deployment
-
-The deploy workflow stays dormant until the repository variable `DEPLOY_ENABLED` is set to `true`
-(**Settings → Secrets and variables → Actions → Variables**). Until then CI still runs on every
-push, and the release pipeline is simply skipped rather than failing on missing credentials. Set
-the six secrets listed above first, then flip the variable.
+**Phase 3 — analytics and polish (complete).** Site analytics with Highcharts trend charts, a
+documented simulated monitoring feed behind a replaceable interface, a seeded demo account,
+place search on the map, and final documentation.
