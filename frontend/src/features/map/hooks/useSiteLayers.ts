@@ -5,15 +5,18 @@ import { labelPointsOf } from '@/features/map/lib/labelPoints';
 import {
   SITE_FILL_LAYER_ID,
   SITE_LABEL_SOURCE_ID,
+  SITE_MARKER_LAYER_ID,
   SITE_SOURCE_ID,
   siteFillLayer,
   siteLabelLayer,
+  siteMarkerLayer,
   siteOutlineLayer,
 } from '@/features/map/lib/siteLayers';
 import type { MapSiteCollection } from '@/features/map/types';
 import { useLatest } from '@/shared/hooks/useLatest';
 
 const EMPTY_COLLECTION: MapSiteCollection = { type: 'FeatureCollection', features: [] };
+const CLICKABLE_LAYERS = [SITE_FILL_LAYER_ID, SITE_MARKER_LAYER_ID];
 
 export function useSiteLayers(
   map: MapboxMap | null,
@@ -33,6 +36,7 @@ export function useSiteLayers(
     map.addSource(SITE_LABEL_SOURCE_ID, { type: 'geojson', data: EMPTY_COLLECTION });
     map.addLayer(siteFillLayer);
     map.addLayer(siteOutlineLayer);
+    map.addLayer(siteMarkerLayer);
     map.addLayer(siteLabelLayer);
 
     const selectClickedSite = (event: MapMouseEvent): void => {
@@ -48,14 +52,18 @@ export function useSiteLayers(
       map.getCanvas().style.cursor = '';
     };
 
-    map.on('click', SITE_FILL_LAYER_ID, selectClickedSite);
-    map.on('mouseenter', SITE_FILL_LAYER_ID, showPointer);
-    map.on('mouseleave', SITE_FILL_LAYER_ID, resetPointer);
+    for (const layerId of CLICKABLE_LAYERS) {
+      map.on('click', layerId, selectClickedSite);
+      map.on('mouseenter', layerId, showPointer);
+      map.on('mouseleave', layerId, resetPointer);
+    }
 
     return () => {
-      map.off('click', SITE_FILL_LAYER_ID, selectClickedSite);
-      map.off('mouseenter', SITE_FILL_LAYER_ID, showPointer);
-      map.off('mouseleave', SITE_FILL_LAYER_ID, resetPointer);
+      for (const layerId of CLICKABLE_LAYERS) {
+        map.off('click', layerId, selectClickedSite);
+        map.off('mouseenter', layerId, showPointer);
+        map.off('mouseleave', layerId, resetPointer);
+      }
     };
   }, [map, onSelectRef]);
 
