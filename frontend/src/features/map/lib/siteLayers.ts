@@ -8,6 +8,7 @@ import type {
 import { PROJECT_TYPE_COLORS } from '@/shared/domain/projectType';
 
 export const SITE_SOURCE_ID = 'sites';
+export const SITE_LABEL_SOURCE_ID = 'site-labels';
 export const SITE_FILL_LAYER_ID = 'sites-fill';
 
 const TYPE_COLOR: ExpressionSpecification = [
@@ -45,7 +46,7 @@ export const siteOutlineLayer: LineLayerSpecification = {
 export const siteLabelLayer: SymbolLayerSpecification = {
   id: 'sites-label',
   type: 'symbol',
-  source: SITE_SOURCE_ID,
+  source: SITE_LABEL_SOURCE_ID,
   minzoom: 11,
   layout: {
     'text-field': ['get', 'name'],

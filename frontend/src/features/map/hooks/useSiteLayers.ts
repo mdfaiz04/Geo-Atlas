@@ -1,8 +1,10 @@
 // Keeps the site polygons on the map in sync with the data and reports clicks on them.
 import type { GeoJSONSource, Map as MapboxMap, MapMouseEvent } from 'mapbox-gl';
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
+import { labelPointsOf } from '@/features/map/lib/labelPoints';
 import {
   SITE_FILL_LAYER_ID,
+  SITE_LABEL_SOURCE_ID,
   SITE_SOURCE_ID,
   siteFillLayer,
   siteLabelLayer,
@@ -21,12 +23,14 @@ export function useSiteLayers(
 ): void {
   const onSelectRef = useLatest(onSelectSite);
   const highlightedRef = useRef<string | null>(null);
+  const labelPoints = useMemo(() => labelPointsOf(sites), [sites]);
 
   useEffect(() => {
     if (map === null) {
       return;
     }
     map.addSource(SITE_SOURCE_ID, { type: 'geojson', data: EMPTY_COLLECTION, promoteId: 'id' });
+    map.addSource(SITE_LABEL_SOURCE_ID, { type: 'geojson', data: EMPTY_COLLECTION });
     map.addLayer(siteFillLayer);
     map.addLayer(siteOutlineLayer);
     map.addLayer(siteLabelLayer);
@@ -57,7 +61,8 @@ export function useSiteLayers(
 
   useEffect(() => {
     map?.getSource<GeoJSONSource>(SITE_SOURCE_ID)?.setData(sites);
-  }, [map, sites]);
+    map?.getSource<GeoJSONSource>(SITE_LABEL_SOURCE_ID)?.setData(labelPoints);
+  }, [map, sites, labelPoints]);
 
   useEffect(() => {
     if (map === null) {

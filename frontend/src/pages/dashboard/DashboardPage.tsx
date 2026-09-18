@@ -58,7 +58,7 @@ export function DashboardPage() {
         <div>
           <h1 className="page__title">Portfolio</h1>
           <p className="page__subtitle">
-            Every carbon and biodiversity project you manage, and exactly where its sites are.
+            Every project you manage, and exactly where its sites are.
           </p>
         </div>
         <Button onClick={() => setCreating(true)}>New project</Button>
@@ -85,6 +85,7 @@ export function DashboardPage() {
             <div className="dashboard__selection">
               <SiteDetailsCard
                 site={selectedSite}
+                onClose={() => setSelectedSiteId(null)}
                 action={<Link to={`/projects/${selectedSite.projectId}`}>Open project →</Link>}
               />
             </div>

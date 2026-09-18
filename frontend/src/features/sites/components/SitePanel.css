@@ -40,3 +40,27 @@
   font-size: 0.85rem;
   color: var(--color-text-muted);
 }
+
+.site-panel__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.site-panel__close {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 50%;
+  background-color: var(--color-surface-muted);
+  color: var(--color-text-muted);
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.site-panel__close:hover {
+  color: var(--color-text);
+}

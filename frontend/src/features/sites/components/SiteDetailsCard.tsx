@@ -9,14 +9,22 @@ import '@/features/sites/components/SitePanel.css';
 interface SiteDetailsCardProps {
   site: SiteProperties;
   action?: ReactNode;
+  onClose?: () => void;
 }
 
-export function SiteDetailsCard({ site, action }: SiteDetailsCardProps) {
+export function SiteDetailsCard({ site, action, onClose }: SiteDetailsCardProps) {
   return (
     <section className="site-panel" aria-label={`Selected site ${site.name}`}>
-      <div>
-        <h3 className="site-panel__title">{site.name}</h3>
-        <p className="site-panel__text">{site.projectName}</p>
+      <div className="site-panel__header">
+        <div>
+          <h3 className="site-panel__title">{site.name}</h3>
+          <p className="site-panel__text">{site.projectName}</p>
+        </div>
+        {onClose === undefined ? null : (
+          <button type="button" className="site-panel__close" aria-label="Close" onClick={onClose}>
+            ×
+          </button>
+        )}
       </div>
       <div className="site-panel__meta">
         <Badge color={PROJECT_TYPE_COLORS[site.projectType]}>
