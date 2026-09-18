@@ -15,6 +15,7 @@ projects, draw their sites as polygons on a map, and read how each site performs
 
 - [Architecture](#architecture)
 - [Database schema](#database-schema)
+- [API reference](#api-reference)
 - [Project structure](#project-structure)
 - [Running locally](#running-locally)
 - [CI/CD pipeline](#cicd-pipeline)
@@ -66,11 +67,14 @@ and the storage engine can change without touching business logic.
 
 ```
 src/app         Providers, router, protected routes, application shell
-src/features    One folder per feature (auth, dashboard), each with api / components / pages
-src/shared      HTTP client, token storage, configuration, UI primitives, design tokens
+src/pages       Screens that compose several features (portfolio, project, sign-in)
+src/features    auth · projects · sites · map — each with its own api / hooks / components
+src/shared      HTTP client, query keys, domain vocabulary, formatting, UI primitives
 ```
 
-Features never import each other. Anything two features would share moves into `src/shared`.
+Imports only flow downward: `app → pages → features → shared`. Features never import each other,
+so the map knows nothing about projects or sites — it draws any GeoJSON polygon collection that
+carries an `id`, a `name` and a `projectType`. Screens that need several features live in `pages`.
 
 ---
 
@@ -131,6 +135,36 @@ metres rather than degrees.
 
 ---
 
+## API reference
+
+Every endpoint below `/api/v1` requires a `Bearer` token. Interactive documentation is served at
+`/docs`.
+
+| Method | Path | Purpose |
+| --- | --- | --- |
+| `POST` | `/auth/register` | create an account and receive tokens |
+| `POST` | `/auth/login` | exchange credentials for tokens |
+| `GET` | `/auth/me` | the signed-in user |
+| `GET` | `/projects` | the caller's projects with site count and total hectares |
+| `POST` | `/projects` | create a project |
+| `GET` | `/projects/{id}` | one project with its totals |
+| `DELETE` | `/projects/{id}` | delete a project and, by cascade, its sites |
+| `GET` | `/projects/{id}/sites` | the project's sites as a GeoJSON `FeatureCollection` |
+| `POST` | `/projects/{id}/sites` | save a drawn polygon; PostGIS validates it and measures its area |
+| `GET` | `/sites` | every site in the portfolio as one `FeatureCollection` |
+| `DELETE` | `/sites/{id}` | delete a site |
+| `GET` | `/health` | service, database and PostGIS status (unauthenticated) |
+
+**Ownership is enforced in every query**, not just checked at the door. Requesting another
+account's project or site returns `404`, never `403` — a `403` would confirm the resource exists.
+
+**Site boundaries are validated twice.** The domain `Polygon` value object rejects structural
+problems (unclosed rings, fewer than four points, coordinates off the planet, more than 5,000
+points) before anything touches the database. PostGIS then runs `ST_IsValid`, which catches what
+plain Python cannot — a boundary that crosses itself. Both return `422` with a readable reason.
+
+---
+
 ## Project structure
 
 ```
@@ -188,7 +222,7 @@ API: <http://localhost:8000> · interactive docs: <http://localhost:8000/docs>
 ```bash
 cd frontend
 npm install
-cp .env.example .env          # VITE_API_BASE_URL=http://localhost:8000
+cp .env.example .env          # set VITE_API_BASE_URL and VITE_MAPBOX_TOKEN
 npm run dev
 ```
 
@@ -205,8 +239,8 @@ npm install
 ### Test suites
 
 ```bash
-cd backend  && pytest                    # 11 tests against real PostGIS
-cd frontend && npm run test              # component and HTTP client tests
+cd backend  && pytest                    # 37 tests: domain unit tests + API tests on real PostGIS
+cd frontend && npm run test              # 17 tests: components, API client, map geometry
 ```
 
 ### Environment variables
@@ -218,6 +252,7 @@ cd frontend && npm run test              # component and HTTP client tests
 | `CORS_ORIGINS` | backend | comma-separated list of allowed browser origins |
 | `ENVIRONMENT` | backend | `development`, `test` or `production` |
 | `VITE_API_BASE_URL` | frontend | base URL of the API |
+| `VITE_MAPBOX_TOKEN` | frontend | public Mapbox token (`pk.…`); without it the map shows setup instructions instead of failing |
 
 ---
 
@@ -331,6 +366,38 @@ it would prove nothing about the part of the system most likely to break.
 **Local Python is 3.13, CI and production are pinned to 3.12.** Vercel's Python runtime targets
 3.12, so CI is the authority on compatibility and runs the same version production does.
 
+**GeoJSON as the wire format for sites.** The API returns sites as standard GeoJSON features,
+which Mapbox consumes directly with no translation layer. Any GIS tool can read the same response,
+so the API is useful beyond this frontend.
+
+**The database measures area, not the browser.** Area is computed with
+`ST_Area(geometry::geography)`, which accounts for the curvature of the Earth. A flat-plane
+calculation in JavaScript drifts badly away from the equator. The value is stored in
+`area_hectares` at write time, so listing a portfolio never recomputes geometry.
+
+**Mapbox GL JS used directly, not through `react-map-gl`.** The brief names Mapbox GL JS, and a
+wrapper would hide exactly the integration being assessed. Instead the map is split into small
+hooks that each own one concern — `useMapbox` creates the map, `useSiteLayers` renders and syncs
+polygons, `useMapFraming` handles camera movement, `usePolygonDraw` wraps Mapbox Draw.
+
+**Map selection uses feature state, not re-styling.** Highlighting a site calls `setFeatureState`
+rather than rewriting layer filters, so the GPU re-renders one polygon instead of rebuilding the
+layer.
+
+**Site names are rendered by React, never by Mapbox popups.** Names are user input. Mapbox popups
+take raw HTML, which would be a stored XSS vector; selection details are therefore shown in a React
+panel where text is escaped automatically.
+
+**Mapbox is loaded only on the screens that use it.** Mapbox GL is about 540 KB gzipped. The map
+screens are lazy-loaded, so sign-in downloads 66 KB and never pays for the map. Forcing Mapbox into
+a named vendor chunk was tried and rejected: Rollup then placed shared runtime helpers inside it,
+which made the entry bundle preload the whole map library.
+
+**TanStack Query for server state.** It removes hand-written loading flags and race conditions,
+and invalidation keeps related views consistent — saving a site refreshes the project's totals,
+its site list and the portfolio map together. The cache is cleared on sign-in and sign-out so one
+account can never see another's data from memory.
+
 **No path filtering in CI.** Every job runs on every change. For a repository this size the whole
 pipeline finishes in about two minutes, and running everything removes any chance of a change
 slipping through because a filter was slightly wrong.
@@ -343,8 +410,9 @@ slipping through because a filter was slightly wrong.
 FastAPI service, PostGIS schema and migrations, JWT authentication, React shell with sign-in and
 sign-up, deployment pipeline.
 
-**Phase 2 — core product.** Project CRUD, Mapbox GL JS map with polygon drawing, sites persisted as
-PostGIS geometry, portfolio map view.
+**Phase 2 — core product (complete).** Project management, a satellite portfolio map of every site,
+polygon drawing with Mapbox Draw, boundaries validated and measured by PostGIS, and strict
+per-owner data isolation.
 
 **Phase 3 — analytics and polish.** Site detail screen with Highcharts time series, seeded dataset
 with documented provenance, UI refinement, final documentation.
