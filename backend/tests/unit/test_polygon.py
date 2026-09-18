@@ -1,5 +1,6 @@
 # Checks the boundary rules a site polygon must satisfy before it reaches the database.
 import pytest
+
 from src.domain.exceptions import InvalidGeometryError
 from src.domain.value_objects.polygon import MAX_TOTAL_POSITIONS, Polygon
 

@@ -16,7 +16,7 @@ env:
 
 jobs:
   migrate:
-    name: Apply database migrations
+    name: Migrate and seed the database
     runs-on: ubuntu-latest
     if: github.event.workflow_run.conclusion == 'success' && vars.DEPLOY_ENABLED == 'true'
     defaults:
@@ -33,6 +33,11 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
         run: alembic upgrade head
+      - name: Seed the demo portfolio
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+        run: python -m src.cli.seed_demo
 
   deploy-api:
     name: Deploy API
