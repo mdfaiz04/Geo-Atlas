@@ -6,6 +6,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { LoginForm } from '@/features/auth/components/LoginForm';
 import { AuthContext, type AuthContextValue } from '@/features/auth/context/authContext';
 import { ApiError } from '@/shared/api/httpClient';
+import { DEMO_ACCOUNT } from '@/shared/config/demoAccount';
 
 // Renders the form with a stubbed auth context so no network call happens.
 function renderLoginForm(signIn: AuthContextValue['signIn']) {
@@ -50,5 +51,14 @@ describe('LoginForm', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Sign in' }));
 
     expect(await screen.findByRole('alert')).toHaveTextContent('Incorrect email or password');
+  });
+
+  it('signs straight in with the demo account in one click', async () => {
+    const signIn = vi.fn().mockResolvedValue(undefined);
+    renderLoginForm(signIn);
+
+    await userEvent.click(screen.getByRole('button', { name: 'Explore with the demo account' }));
+
+    expect(signIn).toHaveBeenCalledWith(DEMO_ACCOUNT);
   });
 });

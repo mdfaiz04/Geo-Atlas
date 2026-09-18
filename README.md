@@ -143,7 +143,8 @@ metres rather than degrees.
 ## Demo account
 
 Sign in with **`demo@darukaa.earth`** / **`DarukaaDemo2026`** to see a populated portfolio without
-drawing anything first. It holds four projects on real Indian landscapes — Aravalli forest
+drawing anything first — or press **Explore with the demo account** on the sign-in page to go
+straight in. The site opens on a landing page; **Get Started** leads to sign-in. It holds four projects on real Indian landscapes — Aravalli forest
 restoration near Gurugram, the Sundarbans mangrove belt, Kodagu agroforestry and a Kaziranga
 grassland corridor — with nine sites between them. The boundaries are illustrative, drawn around
 real places.

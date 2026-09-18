@@ -6,32 +6,83 @@
 }
 
 .auth__brand {
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   gap: var(--space-7);
+  overflow: hidden;
   padding: var(--space-7);
   color: #f2f8f5;
-  background:
-    radial-gradient(circle at 15% 20%, rgba(63, 174, 131, 0.35), transparent 55%),
-    linear-gradient(160deg, #0b2a20 0%, #123f2f 55%, #0d3325 100%);
+  background: linear-gradient(160deg, #06221a 0%, #0f4a37 55%, #0c3a2c 100%);
 }
 
-.auth__wordmark {
-  font-size: 1.15rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
+.auth__glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  animation: auth-drift 16s ease-in-out infinite alternate;
+}
+
+.auth__glow--one {
+  top: -120px;
+  left: -80px;
+  width: 460px;
+  height: 460px;
+  background: rgba(62, 207, 142, 0.35);
+}
+
+.auth__glow--two {
+  bottom: -140px;
+  right: -100px;
+  width: 420px;
+  height: 420px;
+  background: rgba(43, 179, 163, 0.3);
+  animation-delay: -8s;
+}
+
+.auth__contours {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-radial-gradient(
+    circle at 72% 38%,
+    transparent 0 26px,
+    rgba(255, 255, 255, 0.05) 27px 28px
+  );
+  mask-image: radial-gradient(circle at 72% 38%, #000 10%, transparent 70%);
+}
+
+.auth__logo,
+.auth__story,
+.auth__points {
+  position: relative;
+}
+
+.auth__logo {
+  align-self: flex-start;
+  color: #f2f8f5;
+}
+
+.auth__story {
+  animation: auth-rise 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both 0.1s;
 }
 
 .auth__headline {
-  font-size: clamp(1.9rem, 3vw, 2.6rem);
-  max-width: 22ch;
+  max-width: 18ch;
+  font-size: clamp(2rem, 3.2vw, 2.9rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
 }
 
 .auth__lede {
   margin-top: var(--space-4);
   max-width: 44ch;
   color: rgba(242, 248, 245, 0.78);
+  font-size: 1.02rem;
 }
 
 .auth__points {
@@ -40,43 +91,69 @@
   gap: var(--space-3);
   list-style: none;
   padding: 0;
-  font-size: 0.92rem;
-  color: rgba(242, 248, 245, 0.85);
+  font-size: 0.95rem;
+  color: rgba(242, 248, 245, 0.88);
+  animation: auth-rise 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both 0.3s;
 }
 
-.auth__point::before {
-  content: '';
-  display: inline-block;
-  width: 7px;
-  height: 7px;
-  margin-right: var(--space-3);
+.auth__point {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.auth__check {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
-  background-color: #6ed3a8;
-  vertical-align: middle;
+  background: rgba(62, 207, 142, 0.2);
+  color: #7ee8bd;
 }
 
 .auth__panel {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: var(--space-6);
-  background-color: var(--color-surface);
+  background:
+    radial-gradient(circle at 85% 10%, rgba(62, 207, 142, 0.1), transparent 45%),
+    var(--color-surface);
 }
 
 .auth__form {
   width: 100%;
-  max-width: 380px;
+  max-width: 400px;
+  animation: auth-rise 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) both 0.15s;
+}
+
+.auth__back {
+  display: inline-block;
+  margin-bottom: var(--space-6);
+  color: var(--color-text-muted);
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.auth__back:hover {
+  color: var(--color-primary);
+  text-decoration: none;
 }
 
 .auth__title {
-  font-size: 1.6rem;
+  font-size: 1.85rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
 }
 
 .auth__subtitle {
   margin-top: var(--space-2);
   margin-bottom: var(--space-6);
   color: var(--color-text-muted);
-  font-size: 0.93rem;
+  font-size: 0.95rem;
 }
 
 .auth__switch {
@@ -86,6 +163,26 @@
   text-align: center;
 }
 
+@keyframes auth-drift {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(40px, 30px, 0) scale(1.1);
+  }
+}
+
+@keyframes auth-rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 @media (max-width: 900px) {
   .auth {
     grid-template-columns: 1fr;
@@ -93,5 +190,13 @@
 
   .auth__brand {
     display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth *,
+  .auth *::before,
+  .auth *::after {
+    animation: none !important;
   }
 }
