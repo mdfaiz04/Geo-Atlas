@@ -5,7 +5,8 @@ projects, draw their sites as polygons on a map, and read how each site performs
 
 | | |
 | --- | --- |
-| **Live demo** | _added when the Vercel deployment is provisioned_ |
+| **Live demo** | <https://darukaa-earth-web.vercel.app> |
+| **API docs** | <https://darukaa-earth-api.vercel.app/docs> |
 | **Stack** | React 18 · Mapbox GL JS · Highcharts · FastAPI · PostgreSQL + PostGIS |
 | **CI/CD** | GitHub Actions → Vercel |
 | **Demo account** | `demo@darukaa.earth` · `DarukaaDemo2026` — four projects and nine sites, ready to explore |
@@ -421,6 +422,13 @@ The deploy workflow stays dormant until the repository variable `DEPLOY_ENABLED`
 (**Settings → Secrets and variables → Actions → Variables**). Until then CI still runs on every
 push, and the release pipeline is simply skipped rather than failing on missing credentials. Set
 the six secrets listed above first, then flip the variable.
+
+Two Vercel details the deployment depends on. First, Vercel's Python builder installs dependencies
+from `pyproject.toml` when one is present, and ours holds only tool settings, so
+`backend/.vercelignore` leaves it out and the runtime is pinned by `backend/.python-version`;
+`requirements.txt` is then the single deployment manifest. Second, both `.vercelignore` files keep
+`.env` files, virtualenvs and `node_modules` out of the upload, because Vercel does not read
+`.gitignore`.
 
 Runtime configuration lives in each Vercel project, not in GitHub:
 
