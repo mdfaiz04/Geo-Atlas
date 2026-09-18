@@ -72,6 +72,18 @@ class SqlAlchemySiteRepository(SiteRepository):
             created_at=model.created_at,
         )
 
+    def find_overlapping(self, project_id: UUID, boundary: Polygon) -> str | None:
+        geometry = to_geometry(boundary)
+        return self._session.scalar(
+            select(SiteModel.name)
+            .where(
+                SiteModel.project_id == project_id,
+                func.ST_Intersects(SiteModel.geom, geometry),
+                ~func.ST_Touches(SiteModel.geom, geometry),
+            )
+            .limit(1)
+        )
+
     def get_owned(self, site_id: UUID, owner_id: UUID) -> Site | None:
         row = self._session.execute(
             site_query()

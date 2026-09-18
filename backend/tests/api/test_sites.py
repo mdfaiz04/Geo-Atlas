@@ -8,6 +8,10 @@ AuthHeaders = Callable[..., dict[str, str]]
 
 SQUARE = [[[77.0, 28.0], [77.01, 28.0], [77.01, 28.01], [77.0, 28.01], [77.0, 28.0]]]
 BOWTIE = [[[77.0, 28.0], [77.01, 28.01], [77.01, 28.0], [77.0, 28.01], [77.0, 28.0]]]
+NEIGHBOUR = [[[77.01, 28.0], [77.02, 28.0], [77.02, 28.01], [77.01, 28.01], [77.01, 28.0]]]
+INSIDE = [
+    [[77.002, 28.002], [77.008, 28.002], [77.008, 28.008], [77.002, 28.008], [77.002, 28.002]]
+]
 
 
 # Creates a project for the given caller and returns its id.
@@ -89,7 +93,7 @@ def test_project_sites_are_returned_as_a_feature_collection(
     headers = auth_headers()
     project_id = create_project(client, headers)
     create_site(client, headers, project_id, name="North block")
-    create_site(client, headers, project_id, name="South block")
+    create_site(client, headers, project_id, coordinates=NEIGHBOUR, name="South block")
 
     body = client.get(f"/api/v1/projects/{project_id}/sites", headers=headers).json()
 
@@ -106,7 +110,7 @@ def test_project_summary_counts_sites_and_area(
     headers = auth_headers()
     project_id = create_project(client, headers)
     create_site(client, headers, project_id)
-    create_site(client, headers, project_id)
+    create_site(client, headers, project_id, coordinates=NEIGHBOUR)
 
     project = client.get(f"/api/v1/projects/{project_id}", headers=headers).json()
 
@@ -148,3 +152,40 @@ def test_deleting_a_project_removes_its_sites(
     client.delete(f"/api/v1/projects/{project_id}", headers=headers)
 
     assert client.get("/api/v1/sites", headers=headers).json()["features"] == []
+
+
+@pytest.mark.parametrize("coordinates", [SQUARE, INSIDE], ids=["identical", "contained"])
+def test_overlapping_site_in_the_same_project_is_rejected(
+    client: TestClient, auth_headers: AuthHeaders, coordinates: list
+) -> None:
+    headers = auth_headers()
+    project_id = create_project(client, headers)
+    create_site(client, headers, project_id, name="North block")
+
+    response = create_site(client, headers, project_id, coordinates=coordinates, name="Overlap")
+
+    assert response.status_code == 409
+    assert "North block" in response.json()["detail"]
+
+
+def test_sites_that_only_share_an_edge_are_allowed(
+    client: TestClient, auth_headers: AuthHeaders
+) -> None:
+    headers = auth_headers()
+    project_id = create_project(client, headers)
+    create_site(client, headers, project_id)
+
+    response = create_site(client, headers, project_id, coordinates=NEIGHBOUR, name="Next door")
+
+    assert response.status_code == 201
+
+
+def test_the_same_land_can_belong_to_different_projects(
+    client: TestClient, auth_headers: AuthHeaders
+) -> None:
+    headers = auth_headers()
+    create_site(client, headers, create_project(client, headers, "Forest carbon"))
+
+    response = create_site(client, headers, create_project(client, headers, "Forest biodiversity"))
+
+    assert response.status_code == 201

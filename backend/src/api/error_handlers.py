@@ -8,6 +8,7 @@ from src.domain.exceptions import (
     InvalidCredentialsError,
     InvalidGeometryError,
     InvalidTokenError,
+    OverlappingSiteError,
     ProjectNotFoundError,
     SiteNotFoundError,
     UserNotFoundError,
@@ -21,6 +22,7 @@ STATUS_BY_ERROR: dict[type[DomainError], int] = {
     ProjectNotFoundError: status.HTTP_404_NOT_FOUND,
     SiteNotFoundError: status.HTTP_404_NOT_FOUND,
     InvalidGeometryError: status.HTTP_422_UNPROCESSABLE_ENTITY,
+    OverlappingSiteError: status.HTTP_409_CONFLICT,
 }
 
 

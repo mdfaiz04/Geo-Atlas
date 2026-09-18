@@ -38,3 +38,11 @@ class SiteNotFoundError(DomainError):
 class InvalidGeometryError(DomainError):
     def __init__(self, reason: str) -> None:
         super().__init__(f"Invalid site boundary: {reason}")
+
+
+class OverlappingSiteError(DomainError):
+    def __init__(self, existing_site_name: str) -> None:
+        super().__init__(
+            f"This boundary overlaps the existing site '{existing_site_name}'. "
+            "Sites in one project cannot share land, or its area would be counted twice."
+        )

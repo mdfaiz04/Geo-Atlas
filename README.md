@@ -163,6 +163,14 @@ problems (unclosed rings, fewer than four points, coordinates off the planet, mo
 points) before anything touches the database. PostGIS then runs `ST_IsValid`, which catches what
 plain Python cannot — a boundary that crosses itself. Both return `422` with a readable reason.
 
+**Sites in one project cannot overlap.** Two overlapping sites would count the same hectares
+twice — in carbon accounting that is double counting, the integrity failure registries reject
+credits for. The check is `ST_Intersects AND NOT ST_Touches`, so an overlap is rejected with `409`
+while sites that merely share an edge are allowed, and the GIST index keeps it fast. The same land
+*may* appear in different projects, because one forest routinely carries both a carbon project and
+a biodiversity project. The rule lives in the `CreateSite` use case, where it is visible, not buried
+in a query.
+
 ---
 
 ## Project structure
@@ -239,8 +247,8 @@ npm install
 ### Test suites
 
 ```bash
-cd backend  && pytest                    # 37 tests: domain unit tests + API tests on real PostGIS
-cd frontend && npm run test              # 17 tests: components, API client, map geometry
+cd backend  && pytest                    # 41 tests: domain unit tests + API tests on real PostGIS
+cd frontend && npm run test              # 19 tests: components, API client, map geometry
 ```
 
 ### Environment variables
@@ -383,6 +391,11 @@ polygons, `useMapFraming` handles camera movement, `usePolygonDraw` wraps Mapbox
 **Map selection uses feature state, not re-styling.** Highlighting a site calls `setFeatureState`
 rather than rewriting layer filters, so the GPU re-renders one polygon instead of rebuilding the
 layer.
+
+**One label per site, placed with `polylabel`.** Mapbox places polygon labels per map tile, so a large
+site was labelled several times. Labels now come from a separate point source positioned by
+Mapbox's `polylabel`, which finds the point deepest inside the shape — unlike a bounding-box centre,
+it stays inside concave boundaries.
 
 **Site names are rendered by React, never by Mapbox popups.** Names are user input. Mapbox popups
 take raw HTML, which would be a stored XSS vector; selection details are therefore shown in a React

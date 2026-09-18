@@ -11,6 +11,9 @@ class SiteRepository(ABC):
     def add(self, project_id: UUID, name: str, boundary: Polygon) -> Site: ...
 
     @abstractmethod
+    def find_overlapping(self, project_id: UUID, boundary: Polygon) -> str | None: ...
+
+    @abstractmethod
     def get_owned(self, site_id: UUID, owner_id: UUID) -> Site | None: ...
 
     @abstractmethod
