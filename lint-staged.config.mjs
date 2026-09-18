@@ -10,7 +10,7 @@ const toFrontendPaths = (files) =>
 const quote = (files) => files.map((file) => `"${file}"`).join(' ');
 
 export default {
-  'frontend/src/**/*.{ts,tsx}': (files) => [
+  'frontend/**/*.{ts,tsx}': (files) => [
     `npm --prefix frontend run lint:fix -- ${toFrontendPaths(files)}`,
     `prettier --write ${quote(files)}`,
   ],
