@@ -26,6 +26,12 @@ describe('apiRequest', () => {
     await expect(apiRequest('/auth/me')).resolves.toEqual({ email: 'admin@darukaa.earth' });
   });
 
+  it('returns nothing for an empty 204 response', async () => {
+    stubFetch(204, null);
+
+    await expect(apiRequest('/sites/1', { method: 'DELETE' })).resolves.toBeUndefined();
+  });
+
   it('raises an ApiError carrying the server detail', async () => {
     stubFetch(409, { detail: 'An account already exists' });
 

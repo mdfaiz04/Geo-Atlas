@@ -35,3 +35,9 @@
   font-size: 0.8rem;
   color: var(--color-danger);
 }
+
+.field__input--multiline {
+  min-height: 88px;
+  resize: vertical;
+  font: inherit;
+}

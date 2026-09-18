@@ -45,6 +45,17 @@
   color: var(--color-primary);
 }
 
+.button--danger {
+  background-color: transparent;
+  border-color: var(--color-border);
+  color: var(--color-danger);
+}
+
+.button--danger:not(:disabled):hover {
+  border-color: var(--color-danger);
+  background-color: var(--color-danger-soft);
+}
+
 .button--full {
   width: 100%;
 }

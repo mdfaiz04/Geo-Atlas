@@ -2,6 +2,8 @@
 import { API_BASE_URL, API_PREFIX } from '@/shared/config/env';
 import { readAccessToken } from '@/shared/api/tokenStorage';
 
+const NO_CONTENT = 204;
+
 export class ApiError extends Error {
   readonly status: number;
 
@@ -64,6 +66,10 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
 
   if (!response.ok) {
     throw new ApiError(response.status, await readErrorMessage(response));
+  }
+
+  if (response.status === NO_CONTENT) {
+    return undefined as T;
   }
 
   return (await response.json()) as T;

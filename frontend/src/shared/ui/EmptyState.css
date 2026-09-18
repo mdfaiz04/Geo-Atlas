@@ -1,0 +1,22 @@
+/* Styles for the message shown when a list has nothing in it. */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-7) var(--space-5);
+  text-align: center;
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-surface);
+}
+
+.empty__title {
+  font-size: 1.05rem;
+}
+
+.empty__text {
+  max-width: 40ch;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}

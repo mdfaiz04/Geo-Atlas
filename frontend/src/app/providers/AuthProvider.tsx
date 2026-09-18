@@ -1,4 +1,5 @@
 // Holds the signed-in user and exposes the authentication actions to the tree.
+import { useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 import { fetchCurrentUser, loginAccount, registerAccount } from '@/features/auth/api/authApi';
@@ -7,6 +8,7 @@ import type { AuthSession, AuthUser, LoginPayload, RegisterPayload } from '@/fea
 import { clearTokens, readAccessToken, saveTokens } from '@/shared/api/tokenStorage';
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const queryClient = useQueryClient();
   const [user, setUser] = useState<AuthUser | null>(null);
   const [initialising, setInitialising] = useState(true);
 
@@ -38,10 +40,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  const startSession = useCallback((session: AuthSession): void => {
-    saveTokens({ accessToken: session.accessToken, refreshToken: session.refreshToken });
-    setUser(session.user);
-  }, []);
+  const startSession = useCallback(
+    (session: AuthSession): void => {
+      queryClient.clear();
+      saveTokens({ accessToken: session.accessToken, refreshToken: session.refreshToken });
+      setUser(session.user);
+    },
+    [queryClient],
+  );
 
   const signIn = useCallback(
     async (payload: LoginPayload): Promise<void> => {
@@ -59,8 +65,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOut = useCallback((): void => {
     clearTokens();
+    queryClient.clear();
     setUser(null);
-  }, []);
+  }, [queryClient]);
 
   const value = useMemo<AuthContextValue>(
     () => ({ user, initialising, signIn, signUp, signOut }),
