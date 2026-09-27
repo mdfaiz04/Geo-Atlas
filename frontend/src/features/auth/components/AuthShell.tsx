@@ -24,7 +24,7 @@ export function AuthShell({ title, subtitle, children, footer }: AuthShellProps)
         <span className="auth__glow auth__glow--one" aria-hidden="true" />
         <span className="auth__glow auth__glow--two" aria-hidden="true" />
         <span className="auth__contours" aria-hidden="true" />
-        <Link className="auth__logo" to="/" aria-label="Darukaa.earth home">
+        <Link className="auth__logo" to="/" aria-label="Geo-Atlas home">
           <BrandMark />
         </Link>
         <div className="auth__story">

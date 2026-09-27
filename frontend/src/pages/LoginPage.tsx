@@ -10,7 +10,7 @@ export function LoginPage() {
       subtitle="Open your carbon and biodiversity portfolio."
       footer={
         <>
-          New to Darukaa? <Link to="/register">Create an account</Link>
+          New to Geo-Atlas? <Link to="/register">Create an account</Link>
         </>
       }
     >

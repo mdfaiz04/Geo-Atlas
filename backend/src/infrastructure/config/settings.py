@@ -8,7 +8,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
-    app_name: str = "Darukaa.Earth API"
+    app_name: str = "Geo-Atlas API"
     environment: str = "development"
     database_url: str
     jwt_secret_key: str = Field(min_length=32)

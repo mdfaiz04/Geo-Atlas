@@ -16,7 +16,7 @@ export function ProductPreview() {
         <img
           className="preview__image"
           src={dashboardPreview}
-          alt="The Darukaa.Earth dashboard: four projects and nine sites on a satellite map of India"
+          alt="The Geo-Atlas dashboard: four projects and nine sites on a satellite map of India"
           width={1600}
           height={1000}
           loading="lazy"

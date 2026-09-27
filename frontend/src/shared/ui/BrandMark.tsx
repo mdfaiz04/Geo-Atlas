@@ -1,4 +1,4 @@
-// The Darukaa.Earth logo: a leaf mark beside the wordmark.
+// The Geo-Atlas logo: a leaf mark beside the wordmark.
 import { useId } from 'react';
 import '@/shared/ui/BrandMark.css';
 
@@ -38,7 +38,7 @@ export function BrandMark({ size = 32 }: { size?: number }) {
         />
       </svg>
       <span className="brand__name">
-        Darukaa<span className="brand__dot">.</span>earth
+        Geo<span className="brand__dot">-</span>Atlas
       </span>
     </span>
   );

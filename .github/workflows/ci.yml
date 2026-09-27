@@ -53,9 +53,9 @@ jobs:
       postgres:
         image: postgis/postgis:16-3.4
         env:
-          POSTGRES_USER: darukaa
-          POSTGRES_PASSWORD: darukaa
-          POSTGRES_DB: darukaa
+          POSTGRES_USER: geoatlas
+          POSTGRES_PASSWORD: geoatlas
+          POSTGRES_DB: geoatlas
         ports:
           - 5432:5432
         options: >-

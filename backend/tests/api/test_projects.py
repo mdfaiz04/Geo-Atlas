@@ -56,7 +56,7 @@ def test_list_returns_only_the_callers_projects(
     client: TestClient, auth_headers: AuthHeaders
 ) -> None:
     owner = auth_headers()
-    stranger = auth_headers("stranger@darukaa.earth")
+    stranger = auth_headers("stranger@geo-atlas.app")
     client.post(PROJECTS_URL, json=FOREST_PROJECT, headers=owner)
     client.post(PROJECTS_URL, json={**FOREST_PROJECT, "name": "Not yours"}, headers=stranger)
 
@@ -69,7 +69,7 @@ def test_another_owners_project_is_reported_as_missing(
     client: TestClient, auth_headers: AuthHeaders
 ) -> None:
     project_id = client.post(PROJECTS_URL, json=FOREST_PROJECT, headers=auth_headers()).json()["id"]
-    stranger = auth_headers("stranger@darukaa.earth")
+    stranger = auth_headers("stranger@geo-atlas.app")
 
     assert client.get(f"{PROJECTS_URL}/{project_id}", headers=stranger).status_code == 404
     assert client.delete(f"{PROJECTS_URL}/{project_id}", headers=stranger).status_code == 404

@@ -1,4 +1,4 @@
-# Darukaa.Earth
+# Geo-Atlas
 
 A geospatial analytics platform for carbon and biodiversity projects. Administrators create
 projects, draw their sites as polygons on a map, and read how each site performs over time.
@@ -9,7 +9,7 @@ projects, draw their sites as polygons on a map, and read how each site performs
 | **API docs** | <https://geo-atlas-api.vercel.app/docs> |
 | **Stack** | React 18 · Mapbox GL JS · Highcharts · FastAPI · PostgreSQL + PostGIS |
 | **CI/CD** | GitHub Actions → Vercel |
-| **Demo account** | `demo@darukaa.earth` · `DarukaaDemo2026` — four projects and nine sites, ready to explore |
+| **Demo account** | `demo@geo-atlas.app` · `GeoAtlasDemo2026` — four projects and nine sites, ready to explore |
 
 ---
 
@@ -142,7 +142,7 @@ metres rather than degrees.
 
 ## Demo account
 
-Sign in with **`demo@darukaa.earth`** / **`DarukaaDemo2026`** to see a populated portfolio without
+Sign in with **`demo@geo-atlas.app`** / **`GeoAtlasDemo2026`** to see a populated portfolio without
 drawing anything first — or press **Explore with the demo account** on the sign-in page to go
 straight in. The site opens on a landing page; **Get Started** leads to sign-in. It holds four projects on real Indian landscapes — Aravalli forest
 restoration near Gurugram, the Sundarbans mangrove belt, Kodagu agroforestry and a Kaziranga
@@ -280,7 +280,7 @@ in a query.
 ## Project structure
 
 ```
-darukaa-earth/
+geo-atlas/
 ├── .github/workflows/     ci.yml (quality gates) and deploy.yml (production release)
 ├── .husky/                pre-commit and commit-msg hooks
 ├── backend/
@@ -311,7 +311,7 @@ docker compose up -d
 ```
 
 This starts PostgreSQL 16 with PostGIS 3.4 on `localhost:5432` (user, password and database are all
-`darukaa`).
+`geoatlas`).
 
 ### 2. Backend
 

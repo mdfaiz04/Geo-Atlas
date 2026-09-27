@@ -24,7 +24,7 @@ export function LandingClosing({ startPath }: { startPath: string }) {
         </Reveal>
       </div>
       <footer className="landing-footer">
-        © 2026 Darukaa.earth · Geospatial analytics for carbon and biodiversity projects
+        © 2026 Geo-Atlas · Geospatial analytics for carbon and biodiversity projects
       </footer>
     </>
   );

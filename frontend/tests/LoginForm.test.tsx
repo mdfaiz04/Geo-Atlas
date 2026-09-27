@@ -32,12 +32,12 @@ describe('LoginForm', () => {
     const signIn = vi.fn().mockResolvedValue(undefined);
     renderLoginForm(signIn);
 
-    await userEvent.type(screen.getByLabelText('Email'), 'admin@darukaa.earth');
+    await userEvent.type(screen.getByLabelText('Email'), 'admin@geo-atlas.app');
     await userEvent.type(screen.getByLabelText('Password'), 'StrongPassword123');
     await userEvent.click(screen.getByRole('button', { name: 'Sign in' }));
 
     expect(signIn).toHaveBeenCalledWith({
-      email: 'admin@darukaa.earth',
+      email: 'admin@geo-atlas.app',
       password: 'StrongPassword123',
     });
   });
@@ -46,7 +46,7 @@ describe('LoginForm', () => {
     const signIn = vi.fn().mockRejectedValue(new ApiError(401, 'Incorrect email or password'));
     renderLoginForm(signIn);
 
-    await userEvent.type(screen.getByLabelText('Email'), 'admin@darukaa.earth');
+    await userEvent.type(screen.getByLabelText('Email'), 'admin@geo-atlas.app');
     await userEvent.type(screen.getByLabelText('Password'), 'WrongPassword');
     await userEvent.click(screen.getByRole('button', { name: 'Sign in' }));
 

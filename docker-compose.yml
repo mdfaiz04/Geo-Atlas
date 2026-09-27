@@ -1,17 +1,17 @@
 services:
   database:
     image: postgis/postgis:16-3.4
-    container_name: darukaa-postgis
+    container_name: geo-atlas-postgis
     environment:
-      POSTGRES_USER: darukaa
-      POSTGRES_PASSWORD: darukaa
-      POSTGRES_DB: darukaa
+      POSTGRES_USER: geoatlas
+      POSTGRES_PASSWORD: geoatlas
+      POSTGRES_DB: geoatlas
     ports:
       - '5432:5432'
     volumes:
       - postgis_data:/var/lib/postgresql/data
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U darukaa -d darukaa']
+      test: ['CMD-SHELL', 'pg_isready -U geoatlas -d geoatlas']
       interval: 5s
       timeout: 5s
       retries: 10

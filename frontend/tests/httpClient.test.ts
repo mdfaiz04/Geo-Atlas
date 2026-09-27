@@ -21,9 +21,9 @@ function stubFetch(status: number, body: unknown): void {
 
 describe('apiRequest', () => {
   it('returns the parsed body on success', async () => {
-    stubFetch(200, { email: 'admin@darukaa.earth' });
+    stubFetch(200, { email: 'admin@geo-atlas.app' });
 
-    await expect(apiRequest('/auth/me')).resolves.toEqual({ email: 'admin@darukaa.earth' });
+    await expect(apiRequest('/auth/me')).resolves.toEqual({ email: 'admin@geo-atlas.app' });
   });
 
   it('returns nothing for an empty 204 response', async () => {

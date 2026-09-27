@@ -37,7 +37,7 @@ describe('LandingPage', () => {
   });
 
   it('takes a signed-in member straight to the dashboard', () => {
-    renderLanding({ id: 'user-1', email: 'demo@darukaa.earth', fullName: 'Demo Administrator' });
+    renderLanding({ id: 'user-1', email: 'demo@geo-atlas.app', fullName: 'Demo Administrator' });
 
     expect(screen.getByRole('link', { name: 'Open dashboard' })).toHaveAttribute(
       'href',

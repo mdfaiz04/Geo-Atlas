@@ -79,7 +79,7 @@ def test_another_owners_site_is_reported_as_missing(
     client: TestClient, auth_headers: AuthHeaders
 ) -> None:
     site_id = create_site(client, auth_headers())
-    stranger = auth_headers("stranger@darukaa.earth")
+    stranger = auth_headers("stranger@geo-atlas.app")
 
     assert client.get(f"/api/v1/sites/{site_id}", headers=stranger).status_code == 404
     assert client.get(f"/api/v1/sites/{site_id}/analytics", headers=stranger).status_code == 404

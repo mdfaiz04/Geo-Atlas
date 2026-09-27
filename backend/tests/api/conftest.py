@@ -10,12 +10,12 @@ from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import NullPool
 
 BACKEND_DIR = Path(__file__).resolve().parents[2]
-TEST_DATABASE_NAME = "darukaa_test"
+TEST_DATABASE_NAME = "geoatlas_test"
 ADMIN_DATABASE_URL = os.environ.get(
-    "ADMIN_DATABASE_URL", "postgresql://darukaa:darukaa@localhost:5432/postgres"
+    "ADMIN_DATABASE_URL", "postgresql://geoatlas:geoatlas@localhost:5432/postgres"
 )
 TEST_DATABASE_URL = os.environ.get(
-    "TEST_DATABASE_URL", f"postgresql://darukaa:darukaa@localhost:5432/{TEST_DATABASE_NAME}"
+    "TEST_DATABASE_URL", f"postgresql://geoatlas:geoatlas@localhost:5432/{TEST_DATABASE_NAME}"
 )
 
 os.environ["DATABASE_URL"] = TEST_DATABASE_URL
@@ -74,7 +74,7 @@ def client(db_session: Session) -> Iterator[TestClient]:
 
 @pytest.fixture
 def auth_headers(client: TestClient) -> Callable[..., dict[str, str]]:
-    def register(email: str = "admin@darukaa.earth") -> dict[str, str]:
+    def register(email: str = "admin@geo-atlas.app") -> dict[str, str]:
         response = client.post(
             "/api/v1/auth/register",
             json={"email": email, "full_name": "Test Administrator", "password": "Password123!"},

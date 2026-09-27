@@ -13,7 +13,7 @@ export function AppLayout() {
   return (
     <div className="layout">
       <header className="layout__header">
-        <Link className="layout__brand" to="/dashboard" aria-label="Darukaa.earth dashboard">
+        <Link className="layout__brand" to="/dashboard" aria-label="Geo-Atlas dashboard">
           <BrandMark size={28} />
         </Link>
         <div className="layout__account">

@@ -1,9 +1,9 @@
 {
-  "name": "darukaa-earth",
+  "name": "geo-atlas",
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Repository tooling for the Darukaa.Earth geospatial analytics platform",
+  "description": "Repository tooling for the Geo-Atlas geospatial analytics platform",
   "engines": {
     "node": ">=20"
   },

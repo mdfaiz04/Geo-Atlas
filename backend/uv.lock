@@ -219,7 +219,7 @@ wheels = [
 ]
 
 [[package]]
-name = "darukaa-earth-api"
+name = "geo-atlas-api"
 version = "1.0.0"
 source = { virtual = "." }
 dependencies = [

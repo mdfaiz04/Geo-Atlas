@@ -1,6 +1,6 @@
 // Single place that reads and writes the auth tokens kept in the browser.
-const ACCESS_TOKEN_KEY = 'darukaa.accessToken';
-const REFRESH_TOKEN_KEY = 'darukaa.refreshToken';
+const ACCESS_TOKEN_KEY = 'geo-atlas.accessToken';
+const REFRESH_TOKEN_KEY = 'geo-atlas.refreshToken';
 
 export interface StoredTokens {
   accessToken: string;

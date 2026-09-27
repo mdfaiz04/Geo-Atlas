@@ -6,8 +6,8 @@ LOGIN_URL = "/api/v1/auth/login"
 ME_URL = "/api/v1/auth/me"
 
 CREDENTIALS = {
-    "email": "admin@darukaa.earth",
-    "full_name": "Darukaa Administrator",
+    "email": "admin@geo-atlas.app",
+    "full_name": "Geo-Atlas Administrator",
     "password": "StrongPassword123",
 }
 
@@ -66,7 +66,7 @@ def test_login_rejects_wrong_password(client: TestClient) -> None:
 
 def test_login_rejects_unknown_email(client: TestClient) -> None:
     response = client.post(
-        LOGIN_URL, json={"email": "nobody@darukaa.earth", "password": "StrongPassword123"}
+        LOGIN_URL, json={"email": "nobody@geo-atlas.app", "password": "StrongPassword123"}
     )
 
     assert response.status_code == 401
@@ -94,6 +94,6 @@ def test_me_rejects_a_tampered_token(client: TestClient) -> None:
 
 
 def test_email_is_stored_in_lowercase(client: TestClient) -> None:
-    body = register_account(client, email="Mixed.Case@Darukaa.Earth")
+    body = register_account(client, email="Mixed.Case@Geo-Atlas.App")
 
-    assert body["user"]["email"] == "mixed.case@darukaa.earth"
+    assert body["user"]["email"] == "mixed.case@geo-atlas.app"

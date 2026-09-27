@@ -24,8 +24,8 @@ from src.infrastructure.repositories.sqlalchemy_user_repository import SqlAlchem
 from src.infrastructure.security.bcrypt_password_hasher import BcryptPasswordHasher
 from src.infrastructure.security.jwt_token_service import JwtTokenService
 
-DEMO_EMAIL = "demo@darukaa.earth"
-DEMO_PASSWORD = "DarukaaDemo2026"
+DEMO_EMAIL = "demo@geo-atlas.app"
+DEMO_PASSWORD = "GeoAtlasDemo2026"
 DEMO_NAME = "Demo Administrator"
 
 

@@ -24,7 +24,7 @@ export function LandingNav({ startPath, signedIn }: LandingNavProps) {
   return (
     <header className={`landing-nav ${scrolled ? 'landing-nav--scrolled' : ''}`.trim()}>
       <div className="landing-nav__inner">
-        <Link className="landing-nav__home" to="/" aria-label="Darukaa.earth home">
+        <Link className="landing-nav__home" to="/" aria-label="Geo-Atlas home">
           <BrandMark />
         </Link>
         <nav className="landing-nav__links" aria-label="Page sections">

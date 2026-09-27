@@ -82,7 +82,7 @@ def test_site_cannot_be_added_to_another_owners_project(
     client: TestClient, auth_headers: AuthHeaders
 ) -> None:
     project_id = create_project(client, auth_headers())
-    stranger = auth_headers("stranger@darukaa.earth")
+    stranger = auth_headers("stranger@geo-atlas.app")
 
     assert create_site(client, stranger, project_id).status_code == 404
 
@@ -122,7 +122,7 @@ def test_portfolio_lists_sites_across_projects_for_the_owner_only(
     client: TestClient, auth_headers: AuthHeaders
 ) -> None:
     owner = auth_headers()
-    stranger = auth_headers("stranger@darukaa.earth")
+    stranger = auth_headers("stranger@geo-atlas.app")
     create_site(client, owner, create_project(client, owner, "Forest"), name="Forest block")
     create_site(client, owner, create_project(client, owner, "Wetland"), name="Wetland block")
     create_site(client, stranger, create_project(client, stranger, "Other"), name="Hidden")
