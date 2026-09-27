@@ -1,20 +1,49 @@
+<div align="center">
+
+<img src="frontend/public/favicon.svg" alt="Geo-Atlas logo" width="72" height="72">
+
 # Geo-Atlas
 
-A geospatial analytics platform for carbon and biodiversity projects. Administrators create
-projects, draw their sites as polygons on a map, and read how each site performs over time.
+**Geospatial analytics for carbon and biodiversity projects.**<br>
+Draw every project site as a real PostGIS polygon, validate its boundary, and track how it performs over time.
+
+[![CI](https://github.com/mdfaiz04/Geo-Atlas/actions/workflows/ci.yml/badge.svg)](https://github.com/mdfaiz04/Geo-Atlas/actions/workflows/ci.yml)
+[![Deploy](https://github.com/mdfaiz04/Geo-Atlas/actions/workflows/deploy.yml/badge.svg)](https://github.com/mdfaiz04/Geo-Atlas/actions/workflows/deploy.yml)
+![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)
+![Mapbox GL JS](https://img.shields.io/badge/Mapbox_GL_JS-3-000000?logo=mapbox&logoColor=white)
+![Highcharts](https://img.shields.io/badge/Highcharts-13-8087E8)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
+![PostGIS](https://img.shields.io/badge/PostgreSQL_+_PostGIS-4169E1?logo=postgresql&logoColor=white)
+![Vercel](https://img.shields.io/badge/Vercel-000000?logo=vercel&logoColor=white)
+
+**[Live demo](https://geo-atlas-web.vercel.app)** • **[API docs](https://geo-atlas-api.vercel.app/docs)** • [Architecture](#architecture) • [Run it locally](#running-locally)
+
+</div>
+
+<p align="center">
+  <img src="frontend/src/features/landing/assets/dashboard-preview.webp" alt="The Geo-Atlas portfolio: four projects and nine sites on a satellite map of India" width="100%">
+</p>
+
+> **Try it without signing up.** Open the [live demo](https://geo-atlas-web.vercel.app) and press
+> **Explore with the demo account**, or sign in with `demo@geo-atlas.app` / `GeoAtlasDemo2026`.
+> Four projects and nine sites on real Indian landscapes are ready to explore.
 
 | | |
 | --- | --- |
 | **Live demo** | <https://geo-atlas-web.vercel.app> |
 | **API docs** | <https://geo-atlas-api.vercel.app/docs> |
 | **Stack** | React 18 · Mapbox GL JS · Highcharts · FastAPI · PostgreSQL + PostGIS |
-| **CI/CD** | GitHub Actions → Vercel |
-| **Demo account** | `demo@geo-atlas.app` · `GeoAtlasDemo2026` — four projects and nine sites, ready to explore |
+| **Quality** | 65 backend tests (97% coverage) on real PostGIS · 37 frontend tests · strict lint and types |
+| **CI/CD** | GitHub Actions → Vercel, deploying only commits that passed every check |
 
 ---
 
 ## Contents
 
+- [Overview](#overview)
+- [Features](#features)
 - [Architecture](#architecture)
 - [Database schema](#database-schema)
 - [Demo account](#demo-account)
@@ -23,29 +52,75 @@ projects, draw their sites as polygons on a map, and read how each site performs
 - [API reference](#api-reference)
 - [Project structure](#project-structure)
 - [Running locally](#running-locally)
+- [Testing](#testing)
 - [CI/CD pipeline](#cicd-pipeline)
 - [Code quality enforcement](#code-quality-enforcement)
 - [Technical decisions and trade-offs](#technical-decisions-and-trade-offs)
-- [Delivery phases](#delivery-phases)
+- [Roadmap](#roadmap)
+- [Author](#author)
+
+---
+
+## Overview
+
+Carbon and biodiversity projects are built on claims about land: this forest is being restored,
+this mangrove belt is protected. Geo-Atlas keeps those claims tied to real geometry. You create a
+project, draw each of its sites on a satellite map, and the database validates the boundary,
+measures its true area and refuses overlapping sites that would count the same hectares twice.
+Every site then gets a monitoring history of carbon density, NDVI, canopy cover and species
+richness, read as year-on-year trends.
+
+The repository is a monorepo with two independently deployable applications: a React and Mapbox
+single-page app, and a FastAPI service built with clean architecture on PostgreSQL and PostGIS.
+A CI/CD pipeline ships both to Vercel, and only after every quality gate has passed.
+
+---
+
+## Features
+
+**Map and geometry**
+
+- A satellite portfolio map of every site, collapsing to markers at country zoom.
+- Sites drawn as polygons with Mapbox Draw, plus place search that jumps to any village or
+  district.
+- Boundaries validated twice (domain rules, then PostGIS `ST_IsValid`) and measured on the
+  Earth's curvature, in hectares.
+- Overlapping sites inside one project are rejected, so hectares are never double-counted; sites
+  that only share an edge are allowed.
+
+**Analytics**
+
+- Per-site carbon stock, NDVI, canopy cover and species richness over 12, 24 or 36 months.
+- Year-on-year changes that cancel out monsoon seasonality, with every chart also available as a
+  table.
+- Accessible Highcharts small multiples with colours validated for light and dark mode.
+
+**Platform**
+
+- JWT authentication with refresh tokens and bcrypt hashing.
+- Strict per-owner data isolation: another account's project or site is a `404`, never a `403`.
+- A one-click demo account backed by an idempotent seed, a landing page and a dark theme.
+- The 530 KB map library loads only on map screens; sign-in ships about 68 KB of JavaScript.
+
+**Engineering**
+
+- A clean-architecture FastAPI service whose business rules import no framework or driver.
+- Tests against real PostGIS rather than SQLite, and migrations exercised on every commit.
+- Commit hooks for both languages, and a deploy pipeline that migrates, releases and smoke-tests
+  production.
 
 ---
 
 ## Architecture
 
-The system is a monorepo holding two independently deployable applications and one managed
-database.
+The system is two independently deployable applications and one managed database.
 
-```
-Browser
-   │
-   ▼
-React SPA (Vercel static hosting)
-   │  JSON over HTTPS, JWT bearer token
-   ▼
-FastAPI (Vercel Python serverless function)
-   │  SQLAlchemy 2.0 + GeoAlchemy2
-   ▼
-PostgreSQL 16 + PostGIS 3.4 (Neon, pooled connection)
+```mermaid
+flowchart LR
+    User(["Browser"]) --> Web["React SPA<br/>Vercel static hosting"]
+    Web -->|"JSON over HTTPS · JWT"| Api["FastAPI<br/>Vercel Python function"]
+    Web -->|"map tiles · geocoding"| Mapbox["Mapbox"]
+    Api -->|"SQLAlchemy 2.0 · GeoAlchemy2"| Db[("PostgreSQL + PostGIS<br/>Neon, pooled connection")]
 ```
 
 ### Backend layering
@@ -53,15 +128,15 @@ PostgreSQL 16 + PostGIS 3.4 (Neon, pooled connection)
 The API follows clean architecture. Dependencies point inward, so the business rules never import
 a framework or a database driver.
 
-```
-src/api             HTTP concerns: routers, request/response schemas, dependency wiring
-   │                (depends on application)
-src/application     Use cases, commands and results, ports for hashing and tokens
-   │                (depends on domain)
-src/domain          Entities, repository contracts, domain errors — zero third-party imports
-   ▲
-src/infrastructure  SQLAlchemy models, repository implementations, bcrypt, JWT, settings
-                    (implements the domain and application contracts)
+```mermaid
+flowchart TB
+    Api["<b>api</b><br/>routers · request and response schemas · dependency wiring"]
+    App["<b>application</b><br/>use cases · commands and results · ports"]
+    Domain["<b>domain</b><br/>entities · repository contracts · domain errors<br/>no third-party imports"]
+    Infra["<b>infrastructure</b><br/>SQLAlchemy models · repositories · bcrypt · JWT · settings"]
+    Api --> App --> Domain
+    Infra --> Domain
+    Infra -. implements ports .-> App
 ```
 
 The practical effect: `RegisterUser` is handed a `UserRepository`, a `PasswordHasher` and a
@@ -73,7 +148,7 @@ and the storage engine can change without touching business logic.
 ```
 src/app         Providers, router, protected routes, application shell
 src/pages       Screens that compose several features (portfolio, project, sign-in)
-src/features    auth · projects · sites · map — each with its own api / hooks / components
+src/features    auth · projects · sites · map · analytics · landing — each with api / hooks / components
 src/shared      HTTP client, query keys, domain vocabulary, formatting, UI primitives
 ```
 
@@ -87,67 +162,65 @@ carries an `id`, a `name` and a `projectType`. Screens that need several feature
 
 Four tables. `sites.geom` is a real PostGIS geometry, not a pair of floats.
 
-### `users`
+```mermaid
+erDiagram
+    USERS ||--o{ PROJECTS : owns
+    PROJECTS ||--o{ SITES : contains
+    SITES ||--o{ SITE_METRICS : records
 
-| Column | Type | Notes |
-| --- | --- | --- |
-| `id` | `uuid` | primary key |
-| `email` | `varchar(320)` | unique, indexed |
-| `full_name` | `varchar(120)` | |
-| `password_hash` | `varchar(128)` | bcrypt digest |
-| `created_at` | `timestamptz` | server default `now()` |
+    USERS {
+        uuid id PK
+        varchar email UK "indexed"
+        varchar full_name
+        varchar password_hash "bcrypt digest"
+        timestamptz created_at
+    }
+    PROJECTS {
+        uuid id PK
+        uuid owner_id FK "ON DELETE CASCADE"
+        varchar name
+        text description
+        varchar project_type "carbon or biodiversity"
+        varchar status "defaults to active"
+        timestamptz created_at
+        timestamptz updated_at
+    }
+    SITES {
+        uuid id PK
+        uuid project_id FK "ON DELETE CASCADE"
+        varchar name
+        geometry geom "Polygon, SRID 4326, GIST index"
+        numeric area_hectares "measured by PostGIS"
+        timestamptz created_at
+    }
+    SITE_METRICS {
+        uuid id PK
+        uuid site_id FK "ON DELETE CASCADE"
+        varchar metric_type "carbon_density, ndvi, canopy_cover, species_richness"
+        date recorded_at
+        numeric value
+        varchar unit
+    }
+```
 
-### `projects`
-
-| Column | Type | Notes |
-| --- | --- | --- |
-| `id` | `uuid` | primary key |
-| `owner_id` | `uuid` | → `users.id`, `ON DELETE CASCADE`, indexed |
-| `name` | `varchar(160)` | |
-| `description` | `text` | nullable |
-| `project_type` | `varchar(32)` | `carbon` or `biodiversity` |
-| `status` | `varchar(32)` | defaults to `active` |
-| `created_at` / `updated_at` | `timestamptz` | |
-
-### `sites`
-
-| Column | Type | Notes |
-| --- | --- | --- |
-| `id` | `uuid` | primary key |
-| `project_id` | `uuid` | → `projects.id`, `ON DELETE CASCADE`, indexed |
-| `name` | `varchar(160)` | |
-| `geom` | `geometry(Polygon, 4326)` | **GIST index** `idx_sites_geom` |
-| `area_hectares` | `numeric(14,4)` | computed from the polygon |
-| `created_at` | `timestamptz` | |
-
-### `site_metrics`
-
-| Column | Type | Notes |
-| --- | --- | --- |
-| `id` | `uuid` | primary key |
-| `site_id` | `uuid` | → `sites.id`, `ON DELETE CASCADE` |
-| `metric_type` | `varchar(50)` | `carbon_density`, `ndvi`, `canopy_cover` or `species_richness` |
-| `recorded_at` | `date` | |
-| `value` | `numeric(14,4)` | |
-| `unit` | `varchar(20)` | |
-
-Composite index `ix_site_metrics_series (site_id, metric_type, recorded_at)` serves the time-series
-queries behind the site analytics charts — one index covering filter and sort.
-
-**Why SRID 4326:** it is the coordinate system Mapbox emits, so polygons are stored exactly as
-drawn with no reprojection. Area is computed by casting to `geography`, which returns true square
-metres rather than degrees.
+- **Spatial index.** `idx_sites_geom` is a GIST index, which keeps the overlap check and map
+  queries fast as the portfolio grows.
+- **Time-series index.** The composite index `ix_site_metrics_series (site_id, metric_type,
+  recorded_at)` serves the analytics charts: one index covering both the filter and the sort.
+- **Why SRID 4326.** It is the coordinate system Mapbox emits, so polygons are stored exactly as
+  drawn with no reprojection. Area is computed by casting to `geography`, which returns true square
+  metres rather than degrees.
 
 ---
 
 ## Demo account
 
-Sign in with **`demo@geo-atlas.app`** / **`GeoAtlasDemo2026`** to see a populated portfolio without
-drawing anything first — or press **Explore with the demo account** on the sign-in page to go
-straight in. The site opens on a landing page; **Get Started** leads to sign-in. It holds four projects on real Indian landscapes — Aravalli forest
-restoration near Gurugram, the Sundarbans mangrove belt, Kodagu agroforestry and a Kaziranga
-grassland corridor — with nine sites between them. The boundaries are illustrative, drawn around
-real places.
+Sign in with **`demo@geo-atlas.app`** / **`GeoAtlasDemo2026`**, or press **Explore with the demo
+account** on the sign-in page, to see a populated portfolio without drawing anything first. The
+site opens on a landing page, and **Get Started** leads to sign-in. The account holds four projects
+on real Indian landscapes — Aravalli forest restoration near Gurugram, the Sundarbans mangrove
+belt, Kodagu agroforestry and a Kaziranga grassland corridor — with nine sites between them. The
+boundaries are illustrative, drawn around real places.
 
 The seed is created by `python -m src.cli.seed_demo`. It goes through the same use cases as the
 API, so demo data has to pass the same rules — valid geometry, no overlapping sites — and gets
@@ -171,10 +244,9 @@ metric over 12, 24 or 36 months.
 
 ### The data is simulated — deliberately, and behind an interface
 
-The brief allows any dataset as long as the choice is explained, so here it is. Real per-polygon
-history for these metrics needs Google Earth Engine or Sentinel Hub accounts, minutes of
-processing per request, and field surveys for species counts. A reviewer could not run that
-without credentials, and a demo that depends on it breaks the moment a quota runs out.
+Real per-polygon history for these metrics needs Google Earth Engine or Sentinel Hub accounts,
+minutes of processing per request, and field surveys for species counts. A public demo cannot
+depend on private credentials, and one that did would break the moment a quota ran out.
 
 So each new site receives a **simulated monitoring feed**, generated once and stored in
 `site_metrics` like real observations would be. It is not random noise. It follows a small,
@@ -240,7 +312,7 @@ text — legend, badge and details card — so colour is never the only signal.
 ## API reference
 
 Every endpoint below `/api/v1` requires a `Bearer` token. Interactive documentation is served at
-`/docs`.
+[`/docs`](https://geo-atlas-api.vercel.app/docs).
 
 | Method | Path | Purpose |
 | --- | --- | --- |
@@ -289,8 +361,8 @@ geo-atlas/
 │   ├── src/               domain · application · infrastructure · api · cli
 │   └── tests/             pytest suite running against real PostGIS
 ├── frontend/
-│   ├── src/               app · features · shared
-│   └── tests/             vitest component and client tests
+│   ├── src/               app · pages · features · shared
+│   └── tests/             Vitest component and client tests
 ├── scripts/               tooling helpers used by the commit hooks
 ├── docker-compose.yml     local PostgreSQL + PostGIS
 └── lint-staged.config.mjs routes staged files to the right linter
@@ -317,8 +389,8 @@ This starts PostgreSQL 16 with PostGIS 3.4 on `localhost:5432` (user, password a
 
 ```bash
 cd backend
-uv sync --group dev                          # exact versions from uv.lock, Python 3.12
-cp .env.example .env                         # then set JWT_SECRET_KEY to 32+ characters
+uv sync --group dev                              # exact versions from uv.lock, Python 3.12
+cp .env.example .env                             # then set JWT_SECRET_KEY to 32+ characters
 uv run --group dev alembic upgrade head
 uv run --group dev python -m src.cli.seed_demo   # optional: the demo account and portfolio
 uv run --group dev uvicorn src.main:app --reload --port 8000
@@ -345,13 +417,6 @@ Run once from the repository root so Husky installs its hooks:
 npm install
 ```
 
-### Test suites
-
-```bash
-cd backend  && uv run --group dev pytest # 65 tests: domain unit tests + API tests on real PostGIS
-cd frontend && npm run test              # 33 tests: components, charts, search, API client, geometry
-```
-
 ### Environment variables
 
 | Variable | Where | Purpose |
@@ -365,10 +430,42 @@ cd frontend && npm run test              # 33 tests: components, charts, search,
 
 ---
 
+## Testing
+
+```bash
+cd backend  && uv run --group dev pytest --cov=src   # 65 tests, 97% coverage, real PostGIS
+cd frontend && npm run test                          # 37 tests: components, charts, search, API client, geometry
+```
+
+- **Backend unit tests** cover the domain on its own: polygon validation, metric summaries, the
+  demo site boundaries and the simulated monitoring model, including the growth and disturbance
+  rules it promises.
+- **Backend API tests** run the real FastAPI app against a real PostGIS database created for the
+  test session: authentication, ownership isolation, boundary validation, overlap rejection,
+  analytics and the idempotent demo seed.
+- **Frontend tests** (Vitest and Testing Library) cover forms, the landing page, place search, chart
+  options, number formatting, map geometry helpers and the HTTP client's token handling.
+
+---
+
 ## CI/CD pipeline
 
 Two workflows, deliberately separated so that **a deployment cannot happen unless every check has
 already passed**.
+
+```mermaid
+flowchart TB
+    Push(["Push or pull request to main"]) --> CI
+    subgraph CI["ci.yml · five jobs in parallel"]
+        direction LR
+        F["Repository<br/>formatting"] ~~~ BQ["Backend<br/>lint and types"] ~~~ BT["Backend tests<br/>on real PostGIS"] ~~~ FQ["Frontend<br/>lint and types"] ~~~ FT["Frontend<br/>tests and build"]
+    end
+    CI -->|"all green on main"| CD
+    subgraph CD["deploy.yml · four jobs in sequence"]
+        direction LR
+        M["Migrate and<br/>seed database"] --> A["Deploy<br/>API"] --> W["Deploy<br/>web app"] --> S["Smoke test<br/>production"]
+    end
+```
 
 ### `ci.yml` — runs on every push and pull request to `main`
 
@@ -381,7 +478,7 @@ already passed**.
 | `frontend-tests` | Vitest suite followed by a production Vite build |
 
 All five jobs run in parallel. `concurrency` cancels superseded runs so a fast follow-up push does
-not queue behind stale work. Dependency caching (pip and npm) keeps the pipeline short.
+not queue behind stale work, and dependency caching (uv and npm) keeps the pipeline short.
 
 The backend test job is the important one: it spins up **real PostGIS**, applies the Alembic
 migrations and runs the suite against them. Migrations are therefore tested on every commit rather
@@ -419,11 +516,9 @@ which would defeat the purpose of the pipeline.
 | `VERCEL_PROJECT_ID_API`, `VERCEL_PROJECT_ID_WEB` | the matching deploy job |
 | `DATABASE_URL`, `JWT_SECRET_KEY` | the migration job |
 
----
-
 ### Enabling deployment
 
-Deployment is **enabled**. The workflow stays dormant unless the repository variable `DEPLOY_ENABLED` is `true`
+The release pipeline stays dormant unless the repository variable `DEPLOY_ENABLED` is `true`
 (**Settings → Secrets and variables → Actions → Variables**). Until then CI still runs on every
 push, and the release pipeline is simply skipped rather than failing on missing credentials. Set
 the six secrets listed above first, then flip the variable.
@@ -458,8 +553,8 @@ Quality is enforced at the moment of commit, not discovered later in review.
 
 | Pattern | Commands |
 | --- | --- |
-| `frontend/src/**/*.{ts,tsx}` | ESLint `--fix --max-warnings 0`, then Prettier |
-| `*.{js,cjs,mjs,json,css,yml,yaml}` | Prettier |
+| `frontend/**/*.{ts,tsx}` | ESLint `--fix --max-warnings 0`, then Prettier |
+| `*.{js,cjs,mjs,json,css,html,yml,yaml}` | Prettier |
 | `backend/**/*.py` | Ruff lint `--fix`, then Ruff format |
 
 Husky is a Node tool and Python is not a Node stack, so `scripts/lint-python.mjs` bridges the gap:
@@ -481,7 +576,7 @@ pre-commit hook that finishes in milliseconds rather than seconds.
 **FastAPI over Django and Flask.** The product is a JSON API with no server-rendered pages, so
 Django's admin, templating and ORM are weight without benefit. Flask would need the same pieces
 assembled by hand. FastAPI provides Pydantic validation at the boundary and generates the OpenAPI
-documentation at `/docs` for free, which is genuine reviewer-facing value.
+documentation at `/docs` for free, so the API reference can never drift from the code.
 
 **PostGIS rather than latitude/longitude columns.** Sites are polygons. Storing them as geometry
 gives real containment and intersection queries, a GIST index, and accurate area in hectares
@@ -493,7 +588,7 @@ Both are handled explicitly — dependencies are kept lean, and SQLAlchemy uses 
 Neon's pooled connection string so short-lived function instances cannot exhaust Postgres
 connections. In exchange the entire stack lives on one platform with one deployment model. Neon
 was chosen over the platform's own free Postgres because free databases elsewhere expire after
-thirty days, and a demo URL has to still work weeks after submission.
+thirty days, and a public demo has to keep working.
 
 **UUID primary keys.** Slightly larger than integers, but identifiers can be generated by the
 application without a database round trip and never leak how many records exist.
@@ -505,8 +600,8 @@ measurable gain at this scale.
 **Tests run against real PostGIS, not SQLite.** SQLite has no geometry type, so a test suite using
 it would prove nothing about the part of the system most likely to break.
 
-**Local Python is 3.13, CI and production are pinned to 3.12.** Vercel's Python runtime targets
-3.12, so CI is the authority on compatibility and runs the same version production does.
+**Python 3.12 everywhere.** Vercel's Python runtime targets 3.12, so `backend/.python-version`
+pins it for local development, CI and production alike, and CI is the authority on compatibility.
 
 **GeoJSON as the wire format for sites.** The API returns sites as standard GeoJSON features,
 which Mapbox consumes directly with no translation layer. Any GIS tool can read the same response,
@@ -517,52 +612,52 @@ so the API is useful beyond this frontend.
 calculation in JavaScript drifts badly away from the equator. The value is stored in
 `area_hectares` at write time, so listing a portfolio never recomputes geometry.
 
-**Mapbox GL JS used directly, not through `react-map-gl`.** The brief names Mapbox GL JS, and a
-wrapper would hide exactly the integration being assessed. Instead the map is split into small
-hooks that each own one concern — `useMapbox` creates the map, `useSiteLayers` renders and syncs
-polygons, `useMapFraming` handles camera movement, `usePolygonDraw` wraps Mapbox Draw.
+**Mapbox GL JS used directly, not through `react-map-gl`.** A wrapper would hide the integration
+that matters most in a mapping product. Instead the map is split into small hooks that each own one
+concern — `useMapbox` creates the map, `useSiteLayers` renders and syncs polygons,
+`useMapFraming` handles camera movement, `usePolygonDraw` wraps Mapbox Draw.
 
 **Map selection uses feature state, not re-styling.** Highlighting a site calls `setFeatureState`
 rather than rewriting layer filters, so the GPU re-renders one polygon instead of rebuilding the
 layer.
 
-**One label per site, placed with `polylabel`.** Mapbox places polygon labels per map tile, so a large
-site was labelled several times. Labels now come from a separate point source positioned by
-Mapbox's `polylabel`, which finds the point deepest inside the shape — unlike a bounding-box centre,
-it stays inside concave boundaries.
+**One label per site, placed with `polylabel`.** Mapbox places polygon labels per map tile, so a
+large site was labelled several times. Labels now come from a separate point source positioned by
+Mapbox's `polylabel`, which finds the point deepest inside the shape — unlike a bounding-box
+centre, it stays inside concave boundaries.
 
 **Site names are rendered by React, never by Mapbox popups.** Names are user input. Mapbox popups
 take raw HTML, which would be a stored XSS vector; selection details are therefore shown in a React
 panel where text is escaped automatically.
 
-**Mapbox is loaded only on the screens that use it.** Mapbox GL is about 540 KB gzipped. The map
-screens are lazy-loaded, so sign-in downloads 66 KB and never pays for the map. Forcing Mapbox into
-a named vendor chunk was tried and rejected: Rollup then placed shared runtime helpers inside it,
-which made the entry bundle preload the whole map library.
+**Mapbox is loaded only on the screens that use it.** Mapbox GL is about 530 KB gzipped. The map
+screens are lazy-loaded, so sign-in downloads about 68 KB and never pays for the map. Forcing
+Mapbox into a named vendor chunk was tried and rejected: Rollup then placed shared runtime helpers
+inside it, which made the entry bundle preload the whole map library.
 
 **TanStack Query for server state.** It removes hand-written loading flags and race conditions,
 and invalidation keeps related views consistent — saving a site refreshes the project's totals,
 its site list and the portfolio map together. The cache is cleared on sign-in and sign-out so one
 account can never see another's data from memory.
 
-**Highcharts, not Chart.js.** The brief allowed either. Highcharts has a stronger datetime axis,
-built-in crosshairs and an accessibility module that exposes charts to screen readers. The
-trade-off is licensing: Highcharts is free for non-commercial use such as this evaluation, and a
-commercial product would need a licence or a move to MIT-licensed Chart.js. The chart options are
-built in one pure function (`metricChartOptions`), so that switch would be contained.
+**Highcharts, not Chart.js.** Highcharts has a stronger datetime axis, built-in crosshairs and an
+accessibility module that exposes charts to screen readers. The trade-off is licensing: Highcharts
+is free for non-commercial use such as this project, and a commercial product would need a licence
+or a move to MIT-licensed Chart.js. The chart options are built in one pure function
+(`metricChartOptions`), so that switch would be contained.
 
 **Place search on the project map.** Drawing a site starts from a view of all India, and panning
 to a village by hand is slow. The search box uses the Mapbox Geocoding API with the same public
 token, waits for a pause in typing before querying, caches results, and is fully keyboard
 operable. Results show their region, because there are two places called Gurugram. The token is a
-public `pk.` token by design; in production it would be restricted to the site's URL in the
+public `pk.` token by design; in production it should be restricted to the site's URL in the
 Mapbox console.
 
 **uv with a lockfile, one dependency list.** Dependencies are declared once in `pyproject.toml`
-and pinned in `uv.lock`, so a laptop, CI and production resolve the identical 47 packages. An
-earlier version kept a separate `requirements.txt`; Vercel's builder reads `pyproject.toml`
-first, found no dependencies there and shipped an API without FastAPI. Collapsing to one source
-removed that whole class of drift.
+and pinned in `uv.lock`, so a laptop, CI and production resolve the identical packages. An earlier
+version kept a separate `requirements.txt`; Vercel's builder reads `pyproject.toml` first, found no
+dependencies there and shipped an API without FastAPI. Collapsing to one source removed that whole
+class of drift.
 
 **No path filtering in CI.** Every job runs on every change. For a repository this size the whole
 pipeline finishes in about two minutes, and running everything removes any chance of a change
@@ -570,16 +665,16 @@ slipping through because a filter was slightly wrong.
 
 ---
 
-## Delivery phases
+## Roadmap
 
-**Phase 1 — foundation and pipeline (complete).** Monorepo, commit hooks, CI, clean-architecture
-FastAPI service, PostGIS schema and migrations, JWT authentication, React shell with sign-in and
-sign-up, deployment pipeline.
+- [ ] Real satellite metrics: a Sentinel-2 NDVI provider behind the existing `SiteMetricsSource` port
+- [ ] Import site boundaries from GeoJSON or KML instead of drawing them
+- [ ] Export a project's sites as GeoJSON, KML or Shapefile
+- [ ] Disturbance alerts when a site's NDVI or canopy cover drops sharply
+- [ ] Team workspaces with role-based access
 
-**Phase 2 — core product (complete).** Project management, a satellite portfolio map of every site,
-polygon drawing with Mapbox Draw, boundaries validated and measured by PostGIS, and strict
-per-owner data isolation.
+---
 
-**Phase 3 — analytics and polish (complete).** Site analytics with Highcharts trend charts, a
-documented simulated monitoring feed behind a replaceable interface, a seeded demo account,
-place search on the map, and final documentation.
+## Author
+
+**MD Faiz** · [Portfolio](https://md-faiz-portfolio-nine.vercel.app) · [GitHub @mdfaiz04](https://github.com/mdfaiz04)
